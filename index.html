@@ -531,7 +531,7 @@ function analyzeTicket(imgData){
 
     showLoading('Passo 2/2 — A analisar jogos...');
 
-    var p2 = 'Raspadinha: "'+(rules.nome_jogo||type)+'" (€'+(rules.preco||'?')+')\nREGRAS: '+(rules.regras||'ver imagem')+'\nCOMO GANHAR: '+(rules.como_ganhar||'ver imagem')+'\n\nAnalisa cada jogo raspado aplicando estas regras. Responde em JSON: {"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":euros ou null,"razao":"resumo","detalhes":"analise jogo a jogo"}. APENAS JSON.';
+    var p2 = 'Raspadinha: "'+(rules.nome_jogo||type)+'" (€'+(rules.preco||'?')+')\n'+'REGRAS IMPRESSAS NA RASPADINHA:\n'+(rules.regras||'ver imagem')+'\nCOMO GANHAR:\n'+(rules.como_ganhar||'ver imagem')+'\n\nINSTRUCOES CRITICAS PARA DETERMINAR O VALOR DO PREMIO:\n1. Le EXATAMENTE o valor numerico impresso na area raspada de cada jogo (ex: 2, 5, 10, 20).\n2. NAO estimes o valor - le o numero que esta IMPRESSO abaixo dos simbolos.\n3. Se vires o simbolo especial (ex: Aranha), o premio e o valor impresso ABAIXO desse simbolo nesse jogo.\n4. Soma APENAS os valores que consegues ler claramente na imagem.\n5. Se o valor nao estiver legivel, indica INCERTO para esse jogo.\n\nAnalisa cada jogo e le o valor exato impresso. Responde em JSON:\n{"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":soma exata dos euros lidos ou null,"razao":"resumo com valor exato lido","detalhes":"por cada jogo: simbolos vistos, valor impresso lido, resultado"}. APENAS JSON.';
 
     return fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
