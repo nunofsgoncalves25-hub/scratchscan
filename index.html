@@ -951,6 +951,7 @@
 <script>
 // ── CONFIG ──
 const CLAUDE_API_KEY = localStorage.getItem('ss_api_key') || '';
+const PROXY_URL = localStorage.getItem('ss_proxy_url') || 'https://api.anthropic.com/v1/messages';
 const STRIPE_PAYMENT_LINKS = {
   starter:    'https://buy.stripe.com/YOUR_STARTER_LINK',
   business:   'https://buy.stripe.com/YOUR_BUSINESS_LINK',
@@ -1163,9 +1164,9 @@ async function analyzeTicket(imageDataUrl) {
     // PASSO 1: Ler nome, preco e regras da raspadinha
     showLoading('Passo 1/2 — A ler regras do jogo...');
 
-    const r1 = await fetch('https://api.anthropic.com/v1/messages', {
+    const r1 = await fetch('PROXY_URL', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': localStorage.getItem('ss_api_key')||'', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': localStorage.getItem('ss_api_key')||'', 'anthropic-version': '2023-06-01',  },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
@@ -1207,9 +1208,9 @@ async function analyzeTicket(imageDataUrl) {
       + 'Analisa CADA jogo raspado aplicando estas regras exatas. Identifica os simbolos revelados em cada jogo e determina se ha premio. Soma todos os premios encontrados.\n\n'
       + 'Responde em JSON: { "resultado": "PREMIO" ou "SEM_PREMIO" ou "INCERTO", "confianca": 0-100, "valor_estimado": total euros ou null, "razao": "resumo em 1 frase", "detalhes": "analise jogo a jogo com simbolos e resultado de cada um. Total final.", "jogos_com_premio": [numeros dos jogos vencedores] }\nRetorna APENAS o JSON.';
 
-    const r2 = await fetch('https://api.anthropic.com/v1/messages', {
+    const r2 = await fetch('PROXY_URL', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': localStorage.getItem('ss_api_key')||'', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': localStorage.getItem('ss_api_key')||'', 'anthropic-version': '2023-06-01',  },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
@@ -1238,6 +1239,64 @@ async function analyzeTicket(imageDataUrl) {
     hideLoading();
     showDemoResult();
   }
+}
+
+
+// ── LOADING / TOAST ──
+function showLoading(text) {
+  document.getElementById('loading-text').textContent = text || 'A processar...';
+  document.getElementById('loading-overlay').classList.add('open');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('open');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── APPLY RESULT ──
+function applyResult(result) {
+  currentCapture.result = result;
+  const badge = document.getElementById('result-badge');
+  const icon = document.getElementById('result-icon');
+  const title = document.getElementById('result-title');
+  const prizeVal = document.getElementById('result-prize-val');
+  const conf = document.getElementById('result-conf');
+  if (result.resultado === 'PRÉMIO' || result.resultado === 'PREMIO') {
+    badge.className = 'result-badge prize';
+    icon.textContent = '🎉';
+    title.textContent = 'Prémio Detetado!';
+    prizeVal.textContent = result.valor_estimado ? '~' + result.valor_estimado + '€' : 'Valor a confirmar';
+    conf.textContent = 'Confiança: ' + result.confianca + '% — ' + result.razao;
+    result.resultado = 'PRÉMIO';
+  } else if (result.resultado === 'SEM_PRÉMIO' || result.resultado === 'SEM_PREMIO') {
+    badge.className = 'result-badge no-prize';
+    icon.textContent = '❌';
+    title.textContent = 'Sem Prémio';
+    prizeVal.textContent = '';
+    conf.textContent = 'Confiança: ' + result.confianca + '% — ' + result.razao;
+    result.resultado = 'SEM_PRÉMIO';
+  } else {
+    badge.className = 'result-badge uncertain';
+    icon.textContent = '🔍';
+    title.textContent = 'Resultado Incerto';
+    prizeVal.textContent = '';
+    conf.textContent = 'Confiança: ' + result.confianca + '% — ' + result.razao;
+  }
+  document.getElementById('result-analysis-text').textContent = result.detalhes || '';
+  document.getElementById('btn-confirm-result').disabled = false;
+}
+
+// ── DEMO RESULT ──
+function showDemoResult() {
+  hideLoading();
+  const demos = [
+    { resultado: 'PRÉMIO', confianca: 87, valor_estimado: 5, razao: 'Três símbolos iguais detetados', detalhes: '⚠️ MODO DEMO — A API Key não está configurada ou houve erro de ligação. Para ativar a análise real, configura a Claude API Key em Perfil.' },
+    { resultado: 'SEM_PRÉMIO', confianca: 94, valor_estimado: null, razao: 'Sem combinações vencedoras', detalhes: '⚠️ MODO DEMO — A API Key não está configurada ou houve erro de ligação. Para ativar a análise real, configura a Claude API Key em Perfil.' },
+  ];
+  applyResult(demos[Math.floor(Math.random() * demos.length)]);
 }
 
 // Expose all functions globally
