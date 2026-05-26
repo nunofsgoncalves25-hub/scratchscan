@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ScratchScan">
+<title>ScratchScan — Validador de Raspadinhas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07070d;
+    --surface: #0f0f1a;
+    --surface2: #16162a;
+    --border: #ffffff0f;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --green: #00e5a0;
+    --red: #ff4d6d;
+    --yellow: #ffd166;
+    --text: #f0f0ff;
+    --muted: #7070a0;
+    --radius: 16px;
+    --font-head: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%; background: var(--bg); color: var(--text);
+    font-family: var(--font-body); overflow: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden; }
+  .screen.active { display: flex; }
+
+  /* ── SPLASH ── */
+  #screen-splash {
+    background: radial-gradient(ellipse at 30% 20%, #6c63ff22 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, #ff658422 0%, transparent 60%),
+                var(--bg);
+    align-items: center; justify-content: center; gap: 24px;
+  }
+  .splash-logo {
+    width: 90px; height: 90px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 0 60px #6c63ff40;
+    animation: splashPulse 2s ease-in-out infinite;
+  }
+  @keyframes splashPulse { 0%,100%{box-shadow:0 0 60px #6c63ff40} 50%{box-shadow:0 0 100px #6c63ff80} }
+  .splash-title { font-family: var(--font-head); font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+  .splash-sub { color: var(--muted); font-size: 14px; font-family: var(--font-mono); }
+  .splash-loader { width: 120px; height: 2px; background: var(--surface2); border-radius: 2px; overflow: hidden; margin-top: 16px; }
+  .splash-loader-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; animation: loadFill 2s ease forwards; }
+  @keyframes loadFill { from{width:0%} to{width:100%} }
+
+  /* ── AUTH ── */
+  #screen-auth {
+    background: radial-gradient(ellipse at 20% 50%, #6c63ff15 0%, transparent 60%), var(--bg);
+    padding: 40px 24px;
+  }
+  .auth-header { margin-bottom: 40px; }
+  .auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .auth-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .auth-logo-name { font-family: var(--font-head); font-size: 22px; font-weight: 800; }
+  .auth-title { font-family: var(--font-head); font-size: 28px; font-weight: 800; line-height: 1.2; }
+  .auth-sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .auth-tabs { display: flex; background: var(--surface); border-radius: 12px; padding: 4px; margin-bottom: 28px; }
+  .auth-tab { flex: 1; padding: 10px; text-align: center; border-radius: 9px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; color: var(--muted); }
+  .auth-tab.active { background: var(--accent); color: #fff; }
+  .auth-form { display: flex; flex-direction: column; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .form-input {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; color: var(--text);
+    font-size: 15px; font-family: var(--font-body);
+    outline: none; transition: border-color .2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--muted); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: #fff; border: none; border-radius: 12px;
+    padding: 16px; font-size: 16px; font-weight: 600;
+    font-family: var(--font-head); cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    margin-top: 8px;
+  }
+  .btn-primary:active { transform: scale(0.98); opacity: .9; }
+  .auth-legal { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; margin-top: 16px; }
+  .auth-legal a { color: var(--accent); text-decoration: none; }
+  .auth-invite { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 13px; color: var(--muted); text-align: center; }
+  .auth-invite b { color: var(--text); }
+  .plan-notice { background: linear-gradient(135deg, #6c63ff15, #ff658415); border: 1px solid #6c63ff30; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+
+  /* ── APP WRAPPER ── */
+  #screen-app {
+    background: var(--bg);
+  }
+  .app-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    z-index: 100;
+  }
+  .nav-item {
+    flex: 1; padding: 10px 4px; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; cursor: pointer;
+    color: var(--muted); transition: color .2s; font-size: 11px;
+    font-family: var(--font-mono);
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .nav-item.scan-btn { color: #fff; }
+  .nav-scan-wrap {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .nav-scan-circle {
+    width: 58px; height: 58px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; cursor: pointer; margin-top: -20px;
+    box-shadow: 0 4px 20px #6c63ff60;
+    transition: transform .15s;
+  }
+  .nav-scan-circle:active { transform: scale(0.92); }
+
+  /* ── PAGES ── */
+  .page { display: none; flex-direction: column; height: 100%; padding-bottom: 80px; overflow-y: auto; }
+  .page.active { display: flex; }
+
+  /* ── HEADER ── */
+  .page-header {
+    padding: 54px 20px 16px;
+    background: linear-gradient(180deg, var(--surface) 0%, transparent 100%);
+    flex-shrink: 0;
+  }
+  .header-row { display: flex; align-items: center; justify-content: space-between; }
+  .header-title { font-family: var(--font-head); font-size: 26px; font-weight: 800; }
+  .header-sub { color: var(--muted); font-size: 13px; font-family: var(--font-mono); margin-top: 2px; }
+  .header-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-family: var(--font-head); font-size: 15px;
+    cursor: pointer;
+  }
+
+  /* ── DASHBOARD ── */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; margin-bottom: 16px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent-c, var(--accent));
+  }
+  .stat-label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .stat-value { font-family: var(--font-head); font-size: 28px; font-weight: 800; margin-top: 6px; }
+  .stat-change { font-size: 11px; font-family: var(--font-mono); margin-top: 4px; color: var(--green); }
+
+  .section-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; padding: 0 16px; margin-bottom: 10px; }
+
+  .quick-actions { display: flex; gap: 10px; padding: 0 16px; margin-bottom: 20px; overflow-x: auto; }
+  .quick-actions::-webkit-scrollbar { display: none; }
+  .quick-btn {
+    flex-shrink: 0; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column;
+    align-items: center; gap: 6px; cursor: pointer; min-width: 80px;
+    font-size: 11px; font-family: var(--font-mono); color: var(--muted);
+    transition: border-color .2s;
+  }
+  .quick-btn:active { border-color: var(--accent); }
+  .quick-btn span:first-child { font-size: 24px; }
+
+  /* ── SCAN PAGE ── */
+  #page-scan { background: #000; padding-bottom: 0; }
+  .scan-camera-wrap {
+    flex: 1; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #camera-video { width: 100%; height: 100%; object-fit: cover; }
+  #camera-canvas { display: none; }
+  .scan-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .scan-frame {
+    width: min(85vw, 360px); height: min(55vw, 240px); position: relative;
+  }
+  .scan-frame::before, .scan-frame::after,
+  .scan-corner-bl, .scan-corner-br {
+    content: ''; position: absolute; width: 28px; height: 28px;
+    border-color: #fff; border-style: solid;
+  }
+  .scan-frame::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+  .scan-frame::after { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+  .scan-corner-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+  .scan-corner-br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+  .scan-line {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scanLine 2s ease-in-out infinite;
+  }
+  @keyframes scanLine { 0%{top:0%} 50%{top:100%} 100%{top:0%} }
+  .scan-hint { color: #ffffffcc; font-family: var(--font-mono); font-size: 12px; margin-top: 16px; text-align: center; }
+
+  .scan-controls {
+    background: var(--surface); padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-shrink: 0;
+  }
+  .scan-type-sel { flex: 1; }
+  .scan-type-label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+  .scan-type-select {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; color: var(--text);
+    font-family: var(--font-body); font-size: 14px; width: 100%; outline: none;
+  }
+  .btn-capture {
+    width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; font-size: 28px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px #6c63ff60; transition: transform .1s;
+  }
+  .btn-capture:active { transform: scale(0.92); }
+  .btn-gallery {
+    flex-shrink: 0; background: var(--surface2); border: 2px solid var(--accent);
+    border-radius: 14px; cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+    padding: 8px 14px; min-width: 64px;
+    font-size: 24px;
+  }
+  .btn-gallery-label {
+    font-size: 9px; font-family: var(--font-mono); color: var(--accent); line-height: 1;
+  }
+
+  /* ── RESULT MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: #000000cc;
+    display: none; align-items: flex-end; z-index: 200;
+    backdrop-filter: blur(8px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    width: 100%; background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    padding: 12px 20px calc(32px + env(safe-area-inset-bottom, 0px));
+    animation: slideUp .3s ease;
+    max-height: 92vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .result-badge {
+    padding: 20px; border-radius: var(--radius); text-align: center; margin-bottom: 20px;
+  }
+  .result-badge.prize { background: linear-gradient(135deg, #00e5a020, #00e5a005); border: 1px solid #00e5a040; }
+  .result-badge.no-prize { background: linear-gradient(135deg, #ff4d6d20, #ff4d6d05); border: 1px solid #ff4d6d40; }
+  .result-badge.uncertain { background: linear-gradient(135deg, #ffd16620, #ffd16605); border: 1px solid #ffd16640; }
+  .result-icon { font-size: 48px; margin-bottom: 8px; }
+  .result-title { font-family: var(--font-head); font-size: 22px; font-weight: 800; }
+  .result-prize-val { font-family: var(--font-mono); font-size: 36px; font-weight: 500; color: var(--green); margin-top: 4px; }
+  .result-conf { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .result-warning {
+    background: #ffd16615; border: 1px solid #ffd16630;
+    border-radius: 10px; padding: 10px 14px; font-size: 12px;
+    color: var(--yellow); margin-bottom: 16px; display: flex; gap: 8px; align-items: flex-start;
+  }
+  .result-analysis { margin-bottom: 16px; }
+  .result-analysis-title { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .result-analysis-text { font-size: 14px; line-height: 1.6; color: var(--text); }
+  .result-image-wrap { border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .result-image-wrap img { width: 100%; display: block; }
+  .result-actions { display: flex; gap: 10px; }
+  .btn-confirm {
+    flex: 1; background: var(--green); color: #000; border: none;
+    border-radius: 12px; padding: 14px; font-weight: 700; font-family: var(--font-head);
+    font-size: 15px; cursor: pointer;
+  }
+  .btn-discard {
+    flex: 1; background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; font-weight: 600; font-family: var(--font-head);
+    font-size: 15px; cursor: pointer;
+  }
+  .result-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .result-row { display: flex; gap: 10px; }
+  .result-row .form-group { flex: 1; }
+
+  /* ── HISTORY PAGE ── */
+  .filter-bar { display: flex; gap: 8px; padding: 0 16px; margin-bottom: 16px; overflow-x: auto; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    flex-shrink: 0; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 14px; font-size: 12px;
+    font-family: var(--font-mono); color: var(--muted); cursor: pointer;
+    transition: all .2s;
+  }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .ticket-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+  .ticket-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px; display: flex; gap: 12px; align-items: center;
+  }
+  .ticket-thumb {
+    width: 52px; height: 36px; border-radius: 8px; background: var(--surface2);
+    display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+    overflow: hidden;
+  }
+  .ticket-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .ticket-info { flex: 1; min-width: 0; }
+  .ticket-type { font-size: 13px; font-weight: 600; font-family: var(--font-head); }
+  .ticket-meta { font-size: 11px; font-family: var(--font-mono); color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ticket-badge {
+    flex-shrink: 0; padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-family: var(--font-mono); font-weight: 500;
+  }
+  .badge-prize { background: #00e5a020; color: var(--green); }
+  .badge-no { background: #ff4d6d20; color: var(--red); }
+  .badge-uncertain { background: #ffd16620; color: var(--yellow); }
+
+  /* ── REPORTS PAGE ── */
+  .report-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin: 0 16px 10px;
+  }
+  .report-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .report-title { font-family: var(--font-head); font-size: 15px; font-weight: 700; }
+  .report-date { font-size: 11px; font-family: var(--font-mono); color: var(--muted); }
+  .report-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .report-row:last-child { border: none; }
+  .report-val { font-family: var(--font-mono); color: var(--accent); }
+  .btn-export {
+    margin: 0 16px; background: var(--surface); border: 1px solid var(--accent);
+    color: var(--accent); border-radius: 12px; padding: 14px; font-size: 14px;
+    font-family: var(--font-head); font-weight: 600; cursor: pointer; width: calc(100% - 32px);
+    transition: background .2s;
+  }
+  .btn-export:active { background: #6c63ff20; }
+
+  /* ── PROFILE PAGE ── */
+  .profile-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin: 0 16px 12px;
+  }
+  .profile-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 24px; font-weight: 800; margin-bottom: 12px;
+  }
+  .profile-name { font-family: var(--font-head); font-size: 20px; font-weight: 800; }
+  .profile-role { font-size: 12px; font-family: var(--font-mono); color: var(--muted); margin-top: 2px; }
+  .plan-card {
+    background: linear-gradient(135deg, #6c63ff20, #ff658415);
+    border: 1px solid #6c63ff30; border-radius: var(--radius); padding: 16px; margin: 0 16px 12px;
+  }
+  .plan-name { font-family: var(--font-head); font-size: 18px; font-weight: 800; }
+  .plan-detail { font-size: 12px; font-family: var(--font-mono); color: var(--muted); margin-top: 4px; }
+  .plan-usage { margin-top: 12px; }
+  .plan-bar { background: var(--surface2); border-radius: 4px; height: 6px; margin-top: 6px; overflow: hidden; }
+  .plan-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; }
+  .menu-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+  .menu-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; font-size: 14px; transition: border-color .2s;
+  }
+  .menu-item:active { border-color: var(--accent); }
+  .menu-icon { font-size: 20px; }
+  .menu-label { flex: 1; font-weight: 500; }
+  .menu-arrow { color: var(--muted); }
+
+  /* ── PLANS MODAL ── */
+  #modal-plans .modal-sheet { padding-top: 20px; }
+  .plans-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+  .plan-option {
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all .2s;
+    position: relative;
+  }
+  .plan-option.popular { border-color: var(--accent); }
+  .plan-popular-tag {
+    position: absolute; top: -10px; left: 16px;
+    background: var(--accent); color: #fff; padding: 2px 10px;
+    border-radius: 20px; font-size: 10px; font-family: var(--font-mono); font-weight: 500;
+  }
+  .plan-option-name { font-family: var(--font-head); font-size: 17px; font-weight: 800; }
+  .plan-option-price { font-family: var(--font-mono); font-size: 24px; color: var(--accent); margin: 4px 0; }
+  .plan-option-price span { font-size: 13px; color: var(--muted); }
+  .plan-option-features { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .plan-option-features li { list-style: none; }
+  .plan-option-features li::before { content: '✓ '; color: var(--green); }
+
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay {
+    position: fixed; inset: 0; background: #000000cc;
+    display: none; align-items: center; justify-content: center;
+    z-index: 300; flex-direction: column; gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+  #loading-overlay.open { display: flex; }
+  .loading-spinner {
+    width: 48px; height: 48px; border: 3px solid var(--surface2);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading-text { font-family: var(--font-mono); font-size: 14px; color: var(--muted); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 20px; font-size: 14px;
+    font-family: var(--font-mono); z-index: 400;
+    transition: opacity .3s; opacity: 0; pointer-events: none;
+    white-space: nowrap;
+  }
+  #toast.show { opacity: 1; }
+
+  input[type="file"] { display: none; }
+
+  /* ── TERMS MODAL ── */
+  #modal-terms .modal-sheet { max-height: 80vh; }
+  .terms-content { font-size: 13px; line-height: 1.7; color: var(--muted); }
+  .terms-content h3 { color: var(--text); font-family: var(--font-head); font-size: 15px; margin: 16px 0 6px; }
+  .terms-content p { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div class="screen" id="screen-splash">
+  <div class="splash-logo">🎰</div>
+  <div class="splash-title">ScratchScan</div>
+  <div class="splash-sub">v1.0.0 — Validador de Raspadinhas</div>
+  <div class="splash-loader"><div class="splash-loader-fill"></div></div>
+  <div style="margin-top:24px;font-size:12px;font-family:var(--font-mono);color:#ffffff40">toque para continuar</div>
+</div>
+
+<!-- AUTH -->
+<div class="screen active" id="screen-auth">
+  <div class="auth-header">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🎰</div>
+      <div class="auth-logo-name">ScratchScan</div>
+    </div>
+    <div class="auth-title">Bem-vindo ao<br>ScratchScan</div>
+    <div class="auth-sub">Plataforma de validação de raspadinhas</div>
+  </div>
+
+  <div class="auth-tabs">
+    <div class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
+    <div class="auth-tab" onclick="switchAuthTab('register')">Registar</div>
+  </div>
+
+  <div id="auth-login" class="auth-form">
+    <div class="form-group">
+      <div class="form-label">Email</div>
+      <input type="email" class="form-input" placeholder="operador@loja.pt" id="login-email">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Password</div>
+      <input type="password" class="form-input" placeholder="••••••••" id="login-pass">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Entrar na Plataforma →</button>
+    <div class="auth-legal">
+      Ao entrar aceita os <a href="#" onclick="openTerms()">Termos e Condições</a> e
+      <a href="#" onclick="openPrivacy()">Política de Privacidade</a>.<br>
+      Dados tratados em conformidade com o RGPD.
+    </div>
+  </div>
+
+  <!-- API KEY SETUP (aparece só se não estiver configurada) -->
+  <div id="auth-apikey" style="display:none;margin-top:16px">
+    <div style="background:#ffd16615;border:1px solid #ffd16640;border-radius:12px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--yellow)">
+      ⚙️ <b>Configuração inicial:</b> introduz a tua Claude API Key para ativar a análise de raspadinhas.
+    </div>
+    <div class="form-group">
+      <div class="form-label">Claude API Key</div>
+      <input type="password" class="form-input" placeholder="A tua chave API..." id="setup-apikey">
+    </div>
+    <button class="btn-primary" style="margin-top:8px" onclick="saveApiKey()">Guardar Chave e Continuar →</button>
+  </div>
+
+  <div id="auth-register" class="auth-form" style="display:none">
+    <div class="auth-invite">
+      <b>Código de convite obrigatório.</b><br>
+      Contacte o administrador para obter acesso.
+    </div>
+    <div class="form-group">
+      <div class="form-label">Código de Convite</div>
+      <input type="text" class="form-input" placeholder="XXXX-XXXX" id="reg-code" style="text-transform:uppercase;letter-spacing:2px">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Nome Completo</div>
+      <input type="text" class="form-input" placeholder="João Silva" id="reg-name">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Email</div>
+      <input type="email" class="form-input" placeholder="operador@loja.pt" id="reg-email">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Password</div>
+      <input type="password" class="form-input" placeholder="Mín. 8 caracteres" id="reg-pass">
+    </div>
+    <div class="plan-notice">
+      <span>💳</span>
+      <span>O plano de subscrição é gerido pelo administrador da conta.</span>
+    </div>
+    <button class="btn-primary" onclick="doRegister()">Criar Conta →</button>
+    <div class="auth-legal">
+      Ao registar aceita os <a href="#" onclick="openTerms()">Termos e Condições</a> e
+      <a href="#" onclick="openPrivacy()">Política de Privacidade</a>.<br>
+      Os dados pessoais são tratados nos termos do RGPD (UE) 2016/679.
+    </div>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div class="screen" id="screen-app">
+
+  <!-- PAGE: DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="header-row">
+        <div>
+          <div class="header-title">Hoje</div>
+          <div class="header-sub" id="dash-date"></div>
+        </div>
+        <div class="header-avatar" id="user-avatar" onclick="navTo('profile')">JS</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" style="--accent-c: var(--accent)">
+        <div class="stat-label">Raspadinhas</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-change">hoje</div>
+      </div>
+      <div class="stat-card" style="--accent-c: var(--green)">
+        <div class="stat-label">Com Prémio</div>
+        <div class="stat-value" id="stat-prize" style="color:var(--green)">0</div>
+        <div class="stat-change" id="stat-prize-pct">0%</div>
+      </div>
+      <div class="stat-card" style="--accent-c: var(--red)">
+        <div class="stat-label">Sem Prémio</div>
+        <div class="stat-value" id="stat-no" style="color:var(--red)">0</div>
+        <div class="stat-change">confirmadas</div>
+      </div>
+      <div class="stat-card" style="--accent-c: var(--yellow)">
+        <div class="stat-label">Incertas</div>
+        <div class="stat-value" id="stat-unc" style="color:var(--yellow)">0</div>
+        <div class="stat-change">verificar</div>
+      </div>
+    </div>
+
+    <div class="section-title">Ações Rápidas</div>
+    <div class="quick-actions">
+      <div class="quick-btn" onclick="navTo('scan')"><span>📷</span><span>Scan</span></div>
+      <div class="quick-btn" onclick="navTo('history')"><span>📋</span><span>Histórico</span></div>
+      <div class="quick-btn" onclick="navTo('reports')"><span>📊</span><span>Relatório</span></div>
+      <div class="quick-btn" onclick="navTo('profile')"><span>⚙️</span><span>Perfil</span></div>
+    </div>
+
+    <div class="section-title">Últimas Raspadinhas</div>
+    <div class="ticket-list" id="recent-list">
+      <div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:13px;padding:20px">
+        Sem registos hoje. Use o botão de scan.
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: SCAN -->
+  <div class="page" id="page-scan" style="padding-bottom:0">
+    <div class="scan-camera-wrap">
+      <video id="camera-video" autoplay playsinline muted></video>
+      <canvas id="camera-canvas"></canvas>
+      <div class="scan-overlay">
+        <div class="scan-frame">
+          <div class="scan-corner-bl"></div>
+          <div class="scan-corner-br"></div>
+          <div class="scan-line"></div>
+        </div>
+        <div class="scan-hint">Posicione a raspadinha dentro da moldura</div>
+      </div>
+      <!-- Big gallery button overlay -->
+      <div style="position:absolute;bottom:20px;right:16px;z-index:10">
+        <div onclick="document.getElementById('gallery-input').click()"
+          style="background:#ffffffee;border-radius:14px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;box-shadow:0 2px 12px #0004">
+          <span style="font-size:28px">🖼️</span>
+          <span style="font-size:10px;font-weight:700;color:#333;font-family:monospace;letter-spacing:.5px">GALERIA</span>
+        </div>
+      </div>
+    </div>
+    <div class="scan-controls">
+      <div class="scan-type-sel">
+        <div class="scan-type-label">Tipo de Raspadinha</div>
+        <select class="scan-type-select" id="ticket-type-sel">
+          <option value="raspadinha_scml">Raspadinha SCML</option>
+          <option value="raspadinha_geral">Raspadinha Geral</option>
+          <option value="raspa_ouro">Raspa Ouro</option>
+          <option value="raspa_prata">Raspa Prata</option>
+          <option value="outros">Outros</option>
+        </select>
+      </div>
+      <div class="btn-gallery" onclick="document.getElementById('gallery-input').click()"><span>🖼️</span><span class="btn-gallery-label">GALERIA</span></div>
+      <button class="btn-capture" id="btn-capture" onclick="capturePhoto()">📸</button>
+    </div>
+    <input type="file" id="gallery-input" accept="image/*" onchange="handleGalleryUpload(event)">
+  </div>
+
+  <!-- PAGE: HISTORY -->
+  <div class="page" id="page-history">
+    <div class="page-header">
+      <div class="header-row">
+        <div>
+          <div class="header-title">Histórico</div>
+          <div class="header-sub">Todas as raspadinhas</div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-chip active" onclick="filterHistory('all', this)">Todas</div>
+      <div class="filter-chip" onclick="filterHistory('prize', this)">Com Prémio</div>
+      <div class="filter-chip" onclick="filterHistory('no-prize', this)">Sem Prémio</div>
+      <div class="filter-chip" onclick="filterHistory('uncertain', this)">Incertas</div>
+      <div class="filter-chip" onclick="filterHistory('today', this)">Hoje</div>
+    </div>
+    <div class="ticket-list" id="history-list"></div>
+  </div>
+
+  <!-- PAGE: REPORTS -->
+  <div class="page" id="page-reports">
+    <div class="page-header">
+      <div class="header-row">
+        <div>
+          <div class="header-title">Relatórios</div>
+          <div class="header-sub">Análise e exportação</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-title">Resumo do Dia</div>
+        <div class="report-date" id="report-date-label"></div>
+      </div>
+      <div class="report-row"><span>Total Analisadas</span><span class="report-val" id="rep-total">0</span></div>
+      <div class="report-row"><span>Com Prémio</span><span class="report-val" style="color:var(--green)" id="rep-prize">0</span></div>
+      <div class="report-row"><span>Sem Prémio</span><span class="report-val" style="color:var(--red)" id="rep-no">0</span></div>
+      <div class="report-row"><span>Incertas</span><span class="report-val" style="color:var(--yellow)" id="rep-unc">0</span></div>
+      <div class="report-row"><span>Taxa de Prémio</span><span class="report-val" id="rep-rate">0%</span></div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-title">Por Tipo</div>
+      </div>
+      <div id="rep-by-type">
+        <div style="color:var(--muted);font-size:13px;font-family:var(--font-mono)">Sem dados suficientes</div>
+      </div>
+    </div>
+
+    <button class="btn-export" onclick="exportReport()">⬇️ Exportar Relatório CSV</button>
+    <div style="height:16px"></div>
+    <button class="btn-export" style="border-color:var(--accent2);color:var(--accent2)" onclick="exportReportPDF()">📄 Exportar Relatório PDF</button>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- PAGE: PROFILE -->
+  <div class="page" id="page-profile">
+    <div class="page-header">
+      <div class="header-row">
+        <div>
+          <div class="header-title">Perfil</div>
+          <div class="header-sub">Conta e subscrição</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-avatar" id="profile-avatar">JS</div>
+      <div class="profile-name" id="profile-name">João Silva</div>
+      <div class="profile-role" id="profile-role">Operador</div>
+    </div>
+
+    <div class="plan-card" id="plan-card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;font-family:var(--font-mono);color:var(--muted)">PLANO ATUAL</div>
+          <div class="plan-name" id="plan-name">Starter</div>
+          <div class="plan-detail" id="plan-detail">1 utilizador · 500 scans/mês</div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:20px;color:var(--accent)" id="plan-price">9.90€<span style="font-size:11px;color:var(--muted)">/mês</span></div>
+      </div>
+      <div class="plan-usage">
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-family:var(--font-mono);color:var(--muted)">
+          <span>Scans usados</span><span id="plan-usage-text">0 / 500</span>
+        </div>
+        <div class="plan-bar"><div class="plan-bar-fill" id="plan-bar-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="menu-list">
+      <div class="menu-item" onclick="openPlans()">
+        <span class="menu-icon">💎</span>
+        <span class="menu-label">Ver Planos / Upgrade</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="openTerms()">
+        <span class="menu-icon">📋</span>
+        <span class="menu-label">Termos e Condições</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="openPrivacy()">
+        <span class="menu-icon">🔒</span>
+        <span class="menu-label">Política de Privacidade</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="openSupport()">
+        <span class="menu-icon">💬</span>
+        <span class="menu-label">Suporte</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="doLogout()">
+        <span class="menu-icon">🚪</span>
+        <span class="menu-label" style="color:var(--red)">Terminar Sessão</span>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="app-nav">
+    <div class="nav-item active" id="nav-dashboard" onclick="navTo('dashboard')">
+      <div class="nav-icon">🏠</div>
+      <div>Início</div>
+    </div>
+    <div class="nav-item" id="nav-history" onclick="navTo('history')">
+      <div class="nav-icon">📋</div>
+      <div>Histórico</div>
+    </div>
+    <div class="nav-scan-wrap">
+      <div class="nav-scan-circle" onclick="navTo('scan')">📷</div>
+    </div>
+    <div class="nav-item" id="nav-reports" onclick="navTo('reports')">
+      <div class="nav-icon">📊</div>
+      <div>Relatórios</div>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="navTo('profile')">
+      <div class="nav-icon">👤</div>
+      <div>Perfil</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- RESULT MODAL -->
+<div class="modal-overlay" id="modal-result">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+
+    <div class="result-badge" id="result-badge">
+      <div class="result-icon" id="result-icon">🎰</div>
+      <div class="result-title" id="result-title">A analisar...</div>
+      <div class="result-prize-val" id="result-prize-val"></div>
+      <div class="result-conf" id="result-conf"></div>
+    </div>
+
+    <div class="result-warning">
+      <span>⚠️</span>
+      <span><b>Sugestão automática.</b> Esta análise é indicativa. A validação oficial deve ser feita no terminal SCML ou sistema autorizado.</span>
+    </div>
+
+    <div class="result-image-wrap" id="result-image-wrap" style="display:none">
+      <img id="result-img" src="" alt="Raspadinha">
+    </div>
+
+    <div class="result-analysis">
+      <div class="result-analysis-title">Análise IA</div>
+      <div class="result-analysis-text" id="result-analysis-text">A processar imagem...</div>
+    </div>
+
+    <div class="result-form">
+      <div class="result-row">
+        <div class="form-group">
+          <div class="form-label">Nº Lote / Série</div>
+          <input type="text" class="form-input" placeholder="Opcional" id="res-lote" style="font-size:13px;padding:10px 12px">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Valor Prémio (€)</div>
+          <input type="number" class="form-input" placeholder="0.00" id="res-valor" style="font-size:13px;padding:10px 12px">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Notas</div>
+        <input type="text" class="form-input" placeholder="Observações adicionais..." id="res-notas" style="font-size:13px;padding:10px 12px">
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-discard" onclick="closeResult()">Descartar</button>
+      <button class="btn-confirm" id="btn-confirm-result" onclick="confirmResult()">✓ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLANS MODAL -->
+<div class="modal-overlay" id="modal-plans">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:6px">Planos ScratchScan</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Escolha o plano ideal para a sua operação</div>
+
+    <div class="plans-grid">
+      <div class="plan-option">
+        <div class="plan-option-name">Starter</div>
+        <div class="plan-option-price">9.90€<span>/mês</span></div>
+        <ul class="plan-option-features">
+          <li>1 utilizador</li>
+          <li>500 scans por mês</li>
+          <li>Histórico 30 dias</li>
+          <li>Exportação CSV</li>
+          <li>Suporte email</li>
+        </ul>
+        <button class="btn-primary" style="margin-top:12px;padding:12px" onclick="selectPlan('starter')">Escolher Starter</button>
+      </div>
+
+      <div class="plan-option popular">
+        <div class="plan-popular-tag">⭐ MAIS POPULAR</div>
+        <div class="plan-option-name">Business</div>
+        <div class="plan-option-price">24.90€<span>/mês</span></div>
+        <ul class="plan-option-features">
+          <li>Até 10 utilizadores</li>
+          <li>Scans ilimitados</li>
+          <li>Histórico completo</li>
+          <li>Exportação CSV + PDF</li>
+          <li>Fotos das raspadinhas</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn-primary" style="margin-top:12px;padding:12px" onclick="selectPlan('business')">Escolher Business</button>
+      </div>
+
+      <div class="plan-option">
+        <div class="plan-option-name">Enterprise</div>
+        <div class="plan-option-price">49.90€<span>/mês</span></div>
+        <ul class="plan-option-features">
+          <li>Até 50 utilizadores</li>
+          <li>Scans ilimitados</li>
+          <li>Multi-loja</li>
+          <li>API access</li>
+          <li>Relatórios avançados</li>
+          <li>Gestor de conta dedicado</li>
+          <li>SLA garantido</li>
+        </ul>
+        <button class="btn-primary" style="margin-top:12px;padding:12px;background:linear-gradient(135deg,var(--accent2),#ff8fab)" onclick="selectPlan('enterprise')">Escolher Enterprise</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:11px;color:var(--muted);line-height:1.6">
+      Pagamentos processados de forma segura via Stripe.<br>
+      Cancele em qualquer altura. Sem compromisso de permanência.<br>
+      IVA incluído. Fatura emitida mensalmente.
+    </div>
+    <div style="height:16px"></div>
+    <button class="btn-discard" style="width:100%;margin-top:4px" onclick="closePlans()">Fechar</button>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="modal-overlay" id="modal-terms">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:16px">Termos e Condições</div>
+    <div class="terms-content">
+      <p><b>Versão:</b> 1.0 &nbsp;|&nbsp; <b>Data:</b> Janeiro 2025</p>
+      <h3>1. Identificação do Serviço</h3>
+      <p>ScratchScan é uma plataforma de suporte operacional para análise indicativa de raspadinhas, fornecida por [NOME EMPRESA], NIF [NIF], com sede em Portugal.</p>
+      <h3>2. Natureza do Serviço</h3>
+      <p>A análise fornecida pelo ScratchScan é <b>meramente indicativa e não constitui validação oficial</b> de raspadinhas. A validação oficial de prémios deve ser feita exclusivamente através dos sistemas autorizados pela SCML ou entidade competente.</p>
+      <h3>3. Subscrição e Pagamentos</h3>
+      <p>Os planos de subscrição são cobrados mensalmente, com renovação automática. O cancelamento pode ser efetuado a qualquer momento no painel de conta, com efeito no final do período faturado. Os pagamentos são processados via Stripe.</p>
+      <h3>4. Responsabilidade</h3>
+      <p>O ScratchScan não se responsabiliza por decisões operacionais tomadas com base exclusiva na análise automática. A responsabilidade da validação final é sempre do operador.</p>
+      <h3>5. Dados Pessoais (RGPD)</h3>
+      <p>Os dados são tratados nos termos do RGPD (UE) 2016/679. O responsável pelo tratamento é [NOME EMPRESA]. Os utilizadores têm direito de acesso, retificação, apagamento e portabilidade dos seus dados. Contacto DPO: dpo@scratchscan.pt</p>
+      <h3>6. Cibersegurança</h3>
+      <p>A plataforma implementa encriptação TLS 1.3, autenticação segura e armazenamento cifrado conforme as melhores práticas do setor. Incidentes de segurança são reportados à CNPD em conformidade com o artigo 33º do RGPD.</p>
+      <h3>7. Lei Aplicável</h3>
+      <p>Estes termos regem-se pela lei portuguesa. Qualquer litígio será submetido aos tribunais competentes da comarca de Lisboa.</p>
+    </div>
+    <div style="height:16px"></div>
+    <button class="btn-confirm" style="width:100%" onclick="closeTerms()">Fechar</button>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:16px">Política de Privacidade</div>
+    <div class="terms-content">
+      <h3>Dados Recolhidos</h3>
+      <p>Recolhemos: nome, email, dados de utilização, imagens das raspadinhas (se opcionalmente guardadas), e dados de pagamento (processados diretamente pela Stripe, não armazenamos dados de cartão).</p>
+      <h3>Finalidade do Tratamento</h3>
+      <p>Os dados são usados exclusivamente para: prestação do serviço, emissão de faturação, melhoria do serviço e cumprimento de obrigações legais.</p>
+      <h3>Retenção de Dados</h3>
+      <p>Dados de conta: durante a subscrição + 30 dias após cancelamento. Dados de faturação: 10 anos (obrigação fiscal). Imagens: conforme configuração do utilizador, máximo 12 meses.</p>
+      <h3>Partilha com Terceiros</h3>
+      <p>Não vendemos dados a terceiros. Partilhamos apenas com: Stripe (pagamentos), serviços de cloud (armazenamento cifrado), e quando exigido por lei.</p>
+      <h3>Direitos do Utilizador</h3>
+      <p>Tem direito a: acesso, retificação, apagamento, portabilidade, oposição e limitação do tratamento. Contacte: privacidade@scratchscan.pt ou a CNPD em www.cnpd.pt</p>
+      <h3>Cookies</h3>
+      <p>Utilizamos apenas cookies essenciais para autenticação. Não utilizamos cookies de tracking ou publicidade.</p>
+    </div>
+    <div style="height:16px"></div>
+    <button class="btn-confirm" style="width:100%" onclick="closePrivacy()">Fechar</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">A analisar raspadinha...</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ════════════════ SCRIPT ════════════════ -->
+<script>
+// ── CONFIG ──
+const CLAUDE_API_KEY = localStorage.getItem('ss_api_key') || '';
+const STRIPE_PAYMENT_LINKS = {
+  starter:    'https://buy.stripe.com/YOUR_STARTER_LINK',
+  business:   'https://buy.stripe.com/YOUR_BUSINESS_LINK',
+  enterprise: 'https://buy.stripe.com/YOUR_ENTERPRISE_LINK'
+};
+
+// ── STATE ──
+let currentUser = null;
+let tickets = [];
+let currentCapture = null;
+let stream = null;
+let currentFilter = 'all';
+
+// ── INIT ──
+function initApp() {
+  const saved = localStorage.getItem('ss_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      tickets = JSON.parse(localStorage.getItem('ss_tickets') || '[]');
+      showApp();
+    } catch(e) {
+      localStorage.clear();
+      showAuth();
+    }
+  } else {
+    showAuth();
+  }
+}
+
+// Inicia imediatamente sem splash
+document.addEventListener('DOMContentLoaded', initApp);
+window.addEventListener('load', initApp);
+
+// ── SCREENS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+function showAuth() { showScreen('auth'); }
+function showApp() {
+  showScreen('app');
+  updateDashboard();
+  updateProfile();
+  const now = new Date();
+  document.getElementById('dash-date').textContent =
+    now.toLocaleDateString('pt-PT', {weekday:'long', day:'numeric', month:'long'});
+  document.getElementById('report-date-label').textContent =
+    now.toLocaleDateString('pt-PT');
+}
+
+// ── AUTH ──
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+  event.target.classList.add('active');
+  if (tab === 'login') {
+    document.getElementById('auth-login').style.display = 'flex';
+  } else {
+    document.getElementById('auth-register').style.display = 'flex';
+  }
+}
+
+function saveApiKey() {
+  const key = document.getElementById('setup-apikey').value.trim();
+  if (key.length < 20) { showToast('⚠️ Chave inválida — muito curta'); return; }
+  localStorage.setItem('ss_api_key', key);
+  document.getElementById('auth-apikey').style.display = 'none';
+  showToast('✅ Chave guardada!');
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { showToast('⚠️ Preencha todos os campos'); return; }
+  // Verifica se tem API key
+  if (!localStorage.getItem('ss_api_key')) {
+    document.getElementById('auth-apikey').style.display = 'block';
+    showToast('⚠️ Configura primeiro a API Key');
+    return;
+  }
+  currentUser = {
+    name: email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+    email,
+    role: 'operator',
+    plan: 'starter',
+    scansUsed: parseInt(localStorage.getItem('ss_scans_used') || '0'),
+    scansLimit: 500
+  };
+  localStorage.setItem('ss_user', JSON.stringify(currentUser));
+  tickets = JSON.parse(localStorage.getItem('ss_tickets') || '[]');
+  showApp();
+  showToast('✅ Sessão iniciada!');
+}
+
+function doRegister() {
+  const code = document.getElementById('reg-code').value.trim().toUpperCase();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!code || !name || !email || !pass) { showToast('⚠️ Preencha todos os campos'); return; }
+  if (code !== 'DEMO-2025') { showToast('❌ Código de convite inválido'); return; }
+  if (pass.length < 8) { showToast('⚠️ Password com mínimo 8 caracteres'); return; }
+  currentUser = { name, email, role: 'operator', plan: 'starter', scansUsed: 0, scansLimit: 500 };
+  localStorage.setItem('ss_user', JSON.stringify(currentUser));
+  tickets = [];
+  showApp();
+  showToast('✅ Conta criada com sucesso!');
+}
+
+function doLogout() {
+  currentUser = null;
+  localStorage.removeItem('ss_user');
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  showAuth();
+}
+
+// ── NAV ──
+function navTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  if (page === 'scan') startCamera();
+  else stopCamera();
+  if (page === 'history') renderHistory(currentFilter);
+  if (page === 'reports') updateReports();
+}
+
+// ── CAMERA ──
+async function startCamera() {
+  try {
+    if (stream) return;
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
+    document.getElementById('camera-video').srcObject = stream;
+  } catch(e) {
+    showToast('⚠️ Câmara não disponível — use galeria');
+  }
+}
+
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    document.getElementById('camera-video').srcObject = null;
+  }
+}
+
+function capturePhoto() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('camera-canvas');
+  if (!stream) { showToast('⚠️ Câmara não ativa'); return; }
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  openResultModal(dataUrl);
+}
+
+function handleGalleryUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => openResultModal(ev.target.result);
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+// ── RESULT MODAL ──
+function openResultModal(imageDataUrl) {
+  currentCapture = { imageDataUrl, timestamp: new Date().toISOString() };
+  const modal = document.getElementById('modal-result');
+  modal.classList.add('open');
+
+  // Reset
+  document.getElementById('result-badge').className = 'result-badge';
+  document.getElementById('result-icon').textContent = '🔍';
+  document.getElementById('result-title').textContent = 'A analisar...';
+  document.getElementById('result-prize-val').textContent = '';
+  document.getElementById('result-conf').textContent = '';
+  document.getElementById('result-analysis-text').textContent = 'A processar imagem com IA...';
+  document.getElementById('res-lote').value = '';
+  document.getElementById('res-valor').value = '';
+  document.getElementById('res-notas').value = '';
+  document.getElementById('btn-confirm-result').disabled = true;
+
+  // Mostra imagem
+  const imgWrap = document.getElementById('result-image-wrap');
+  imgWrap.style.display = 'block';
+  document.getElementById('result-img').src = imageDataUrl;
+
+  analyzeTicket(imageDataUrl);
+}
+
+function closeResult() {
+  document.getElementById('modal-result').classList.remove('open');
+  currentCapture = null;
+}
+
+// ── CLAUDE VISION API ──
+async function analyzeTicket(imageDataUrl) {
+  const ticketType = document.getElementById('ticket-type-sel').value;
+  const base64 = imageDataUrl.split(',')[1];
+  const mimeType = imageDataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+
+  try {
+    // PASSO 1: Ler nome, preco e regras da raspadinha
+    showLoading('Passo 1/2 — A ler regras do jogo...');
+
+    const r1 = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mimeType, data: base64 } },
+            { type: 'text', text: 'Esta e uma raspadinha portuguesa. Le com atencao toda a imagem e extrai em JSON: { "nome_jogo": "nome do jogo", "preco": numero em euros, "regras": "copia exata das instrucoes impressas", "como_ganhar": "resume como se ganha", "simbolos_especiais": "simbolos especiais e o que fazem", "raspada": true se a area ja foi raspada false se ainda tem cobertura prateada }. Retorna APENAS o JSON sem mais texto.' }
+          ]
+        }]
+      })
+    });
+
+    const d1 = await r1.json();
+    if (d1.error) { hideLoading(); showDemoResult(); return; }
+
+    let rules = {};
+    try {
+      rules = JSON.parse((d1.content?.[0]?.text || '{}').replace(/```json|```/g,'').trim());
+    } catch { rules = { nome_jogo: ticketType, preco: '?', regras: '', como_ganhar: '', simbolos_especiais: '', raspada: true }; }
+
+    // Se nao esta raspada, avisa imediatamente
+    if (rules.raspada === false) {
+      hideLoading();
+      applyResult({ resultado: 'INCERTO', confianca: 99, valor_estimado: null,
+        razao: 'Raspadinha por raspar — cliente deve raspar primeiro',
+        detalhes: 'A raspadinha "' + (rules.nome_jogo||'') + '" ainda nao foi raspada. A area prateada esta intacta. O cliente deve raspar todos os jogos e voltar para validacao.'
+      });
+      return;
+    }
+
+    // PASSO 2: Analisar os jogos com as regras conhecidas
+    showLoading('Passo 2/2 — A analisar jogos com as regras...');
+
+    const prompt2 = 'Raspadinha: "' + (rules.nome_jogo||ticketType) + '" (EUR' + (rules.preco||'?') + ')\n'
+      + 'REGRAS DO JOGO:\n' + (rules.regras||'ver imagem') + '\n'
+      + 'COMO SE GANHA:\n' + (rules.como_ganhar||'ver imagem') + '\n'
+      + 'SIMBOLOS ESPECIAIS:\n' + (rules.simbolos_especiais||'nenhum') + '\n\n'
+      + 'Analisa CADA jogo raspado aplicando estas regras exatas. Identifica os simbolos revelados em cada jogo e determina se ha premio. Soma todos os premios encontrados.\n\n'
+      + 'Responde em JSON: { "resultado": "PREMIO" ou "SEM_PREMIO" ou "INCERTO", "confianca": 0-100, "valor_estimado": total euros ou null, "razao": "resumo em 1 frase", "detalhes": "analise jogo a jogo com simbolos e resultado de cada um. Total final.", "jogos_com_premio": [numeros dos jogos vencedores] }\nRetorna APENAS o JSON.';
+
+    const r2 = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: mimeType, data: base64 } }, { type: 'text', text: prompt2 }] }]
+      })
+    });
+
+    hideLoading();
+    const d2 = await r2.json();
+    if (d2.error) { showDemoResult(); return; }
+
+    let result = {};
+    try {
+      result = JSON.parse((d2.content?.[0]?.text || '{}').replace(/```json|```/g,'').trim());
+      result.detalhes = 'Jogo: ' + (rules.nome_jogo||ticketType) + ' (EUR' + (rules.preco||'?') + ')\n\n' + (result.detalhes||'');
+      if (result.jogos_com_premio?.length > 0) result.razao += ' (Jogos vencedores: ' + result.jogos_com_premio.join(', ') + ')';
+      if (result.resultado === 'PREMIO') result.resultado = 'PRÉMIO';
+      if (result.resultado === 'SEM_PREMIO') result.resultado = 'SEM_PRÉMIO';
+    } catch {
+      result = { resultado: 'INCERTO', confianca: 40, valor_estimado: null, razao: 'Erro ao processar resposta', detalhes: d2.content?.[0]?.text || '' };
+    }
+
+    applyResult(result);
+
+  } catch (err) {
+    hideLoading();
+    showDemoResult();
+  }
+}
