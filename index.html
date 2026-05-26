@@ -467,8 +467,8 @@
   </div>
 
   <div class="auth-tabs">
-    <div class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
-    <div class="auth-tab" onclick="switchAuthTab('register')">Registar</div>
+    <div class="auth-tab active" onclick="window.switchAuthTab&&window.switchAuthTab('login')">Entrar</div>
+    <div class="auth-tab" onclick="window.switchAuthTab&&window.switchAuthTab('register')">Registar</div>
   </div>
 
   <div id="auth-login" class="auth-form">
@@ -480,7 +480,7 @@
       <div class="form-label">Password</div>
       <input type="password" class="form-input" placeholder="••••••••" id="login-pass">
     </div>
-    <button class="btn-primary" onclick="doLogin()">Entrar na Plataforma →</button>
+    <button class="btn-primary" onclick="window.doLogin&&window.doLogin()">Entrar na Plataforma →</button>
     <div class="auth-legal">
       Ao entrar aceita os <a href="#" onclick="openTerms()">Termos e Condições</a> e
       <a href="#" onclick="openPrivacy()">Política de Privacidade</a>.<br>
@@ -497,7 +497,7 @@
       <div class="form-label">Claude API Key</div>
       <input type="password" class="form-input" placeholder="A tua chave API..." id="setup-apikey">
     </div>
-    <button class="btn-primary" style="margin-top:8px" onclick="saveApiKey()">Guardar Chave e Continuar →</button>
+    <button class="btn-primary" style="margin-top:8px" onclick="window.saveApiKey&&window.saveApiKey()">Guardar Chave e Continuar →</button>
   </div>
 
   <div id="auth-register" class="auth-form" style="display:none">
@@ -525,7 +525,7 @@
       <span>💳</span>
       <span>O plano de subscrição é gerido pelo administrador da conta.</span>
     </div>
-    <button class="btn-primary" onclick="doRegister()">Criar Conta →</button>
+    <button class="btn-primary" onclick="window.doRegister&&window.doRegister()">Criar Conta →</button>
     <div class="auth-legal">
       Ao registar aceita os <a href="#" onclick="openTerms()">Termos e Condições</a> e
       <a href="#" onclick="openPrivacy()">Política de Privacidade</a>.<br>
@@ -1239,6 +1239,30 @@ async function analyzeTicket(imageDataUrl) {
     showDemoResult();
   }
 }
+
+// Expose all functions globally
+window.doLogin = doLogin;
+window.doRegister = doRegister;
+window.saveApiKey = saveApiKey;
+window.switchAuthTab = switchAuthTab;
+window.navTo = navTo;
+window.openTerms = openTerms;
+window.openPrivacy = openPrivacy;
+window.openPlans = openPlans;
+window.closePlans = closePlans;
+window.closeTerms = closeTerms;
+window.closePrivacy = closePrivacy;
+window.capturePhoto = capturePhoto;
+window.filterHistory = filterHistory;
+window.exportReport = exportReport;
+window.exportReportPDF = exportReportPDF;
+window.selectPlan = selectPlan;
+window.confirmResult = confirmResult;
+window.closeResult = closeResult;
+window.openSupport = openSupport;
+window.doLogout = doLogout;
+window.handleGalleryUpload = handleGalleryUpload;
+window.globalSearch = globalSearch;
 </script>
 </body>
 </html>
