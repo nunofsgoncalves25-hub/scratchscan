@@ -328,25 +328,28 @@ function analyzeTicket(imgData){
 
   var headers = {'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
 
-  var prompt = 'Es um especialista em raspadinhas da SCML Portugal. Analisa esta imagem com muito cuidado.\n\n'
-    + 'PASSO 1 - IDENTIFICA:\n'
-    + 'Le o nome do jogo, preco e as instrucoes impressas.\n\n'
-    + 'PASSO 2 - VERIFICA SE FOI RASPADA:\n'
-    + 'Area com brilho metalico prateado uniforme = NAO raspada.\n'
-    + 'Area com superficie irregular mostrando numeros/simbolos = JA raspada.\n\n'
-    + 'PASSO 3 - ANALISA O RESULTADO (so se raspada=true):\n\n'
-    + 'TIPO NUMEROS (ex: 50X, Mega Sorte - tem numeros para comparar):\n'
-    + '- Le os NUMEROS DA SORTE (linha fixa no topo da area de jogo)\n'
-    + '- Le os SEUS NUMEROS (revelados nas estrelas/simbolos do jogador)\n'
-    + '- Compara: Seu Numero = Numero da Sorte -> PREMIO\n'
-    + '- Valor do premio = numero impresso ABAIXO do numero que coincidiu\n'
-    + '- Se ha multiplicador (2X/5X/10X/20X/50X) aplica ao premio\n\n'
-    + 'TIPO SIMBOLOS (ex: Aranha da Sorte - tem simbolos para combinar):\n'
-    + '- 2 ou 3 simbolos iguais num mesmo jogo = PREMIO\n'
-    + '- Simbolo especial = valor impresso abaixo dele\n'
-    + '- Le o valor EXATO impresso, nao estimes\n\n'
-    + 'RESPONDE APENAS com este JSON (sem mais texto):\n'
-    + '{"raspada":true/false,"nome_jogo":"nome","resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":total euros ou null,"razao":"explicacao em 1 frase","detalhes":"o que viste em cada jogo/numero"}';
+  var prompt = 'Es um especialista forense em raspadinhas da SCML Portugal com 20 anos de experiencia.\n'
+    + 'A tua funcao e analisar raspadinhas mesmo em condicoes dificeis - reflexos, peliculas, desgaste.\n'
+    + 'NUNCA digas que nao consegues ler se houver qualquer numero visivel. Faz o teu melhor esforco sempre.\n\n'
+    + 'REGRA IMPORTANTE: Se a raspadinha tem numeros visiveis (mesmo parcialmente), esta raspada.\n'
+    + 'A pelicula semi-transparente das raspadinhas nao raspadas deixa ver os numeros por baixo - isso NAO significa dano.\n\n'
+    + 'JOGO 50X (raspadinha rosa com estrelas azuis):\n'
+    + '- NUMEROS DA SORTE: linha de 5 numeros no TOPO da area de jogo (ex: 35, 40, 11, 33, 39)\n'
+    + '- SEUS NUMEROS: 15 numeros revelados nas estrelas (3 linhas de 5 estrelas)\n'
+    + '- Cada estrela tem um numero EM CIMA e um valor em euros POR BAIXO\n'
+    + '- Se qualquer numero de cima de estrela = numero da sorte -> PREMIO do valor em baixo\n'
+    + '- Multiplicador (2X/5X/10X/20X/50X) se aparecer multiplica o premio\n'
+    + '- Le TODOS os 15 numeros das estrelas e compara com os 5 numeros da sorte\n\n'
+    + 'JOGO ARANHA DA SORTE (verde com aranha):\n'
+    + '- 9 jogos, cada um com 2 simbolos\n'
+    + '- 2 simbolos iguais = PREMIO do valor indicado\n'
+    + '- Simbolo aranha especial = premio do valor abaixo\n\n'
+    + 'PARA QUALQUER JOGO:\n'
+    + '- Le TODOS os numeros/simbolos visiveis mesmo que parcialmente\n'
+    + '- Nao uses INCERTO por dificuldade de leitura - usa o que consegues ver\n'
+    + '- So usa INCERTO se for completamente impossivel determinar\n\n'
+    + 'Responde APENAS com JSON:\n'
+    + '{"raspada":true/false,"nome_jogo":"nome","numeros_sorte":[lista],"seus_numeros":[lista],"coincidencias":[numeros que coincidem],"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":euros ou null,"razao":"1 frase","detalhes":"lista todos os numeros lidos e comparacao"}';
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST', headers:headers,
