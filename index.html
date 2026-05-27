@@ -492,97 +492,60 @@ function analyzeTicket(imgData){
   var mime = imgData.split(';')[0].split(':')[1]||'image/jpeg';
   var type = $('type-sel').value;
 
-  if(!key){
-    showDemoResult();
-    return;
-  }
+  if(!key){ showDemoResult(); return; }
 
-  showLoading('Passo 1/2 — A ler regras do jogo...');
+  showLoading('A analisar raspadinha...');
 
-  var headers = {
-    'Content-Type':'application/json',
-    'x-api-key': key,
-    'anthropic-version':'2023-06-01',
-    'anthropic-dangerous-direct-browser-access':'true'
-  };
+  var headers = {'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+
+  var prompt = 'Es um especialista em raspadinhas da SCML Portugal. Analisa esta imagem com muito cuidado.\n\n'
+    + 'PASSO 1 - IDENTIFICA:\n'
+    + 'Le o nome do jogo, preco e as instrucoes impressas.\n\n'
+    + 'PASSO 2 - VERIFICA SE FOI RASPADA:\n'
+    + 'Area com brilho metalico prateado uniforme = NAO raspada.\n'
+    + 'Area com superficie irregular mostrando numeros/simbolos = JA raspada.\n\n'
+    + 'PASSO 3 - ANALISA O RESULTADO (so se raspada=true):\n\n'
+    + 'TIPO NUMEROS (ex: 50X, Mega Sorte - tem numeros para comparar):\n'
+    + '- Le os NUMEROS DA SORTE (linha fixa no topo da area de jogo)\n'
+    + '- Le os SEUS NUMEROS (revelados nas estrelas/simbolos do jogador)\n'
+    + '- Compara: Seu Numero = Numero da Sorte -> PREMIO\n'
+    + '- Valor do premio = numero impresso ABAIXO do numero que coincidiu\n'
+    + '- Se ha multiplicador (2X/5X/10X/20X/50X) aplica ao premio\n\n'
+    + 'TIPO SIMBOLOS (ex: Aranha da Sorte - tem simbolos para combinar):\n'
+    + '- 2 ou 3 simbolos iguais num mesmo jogo = PREMIO\n'
+    + '- Simbolo especial = valor impresso abaixo dele\n'
+    + '- Le o valor EXATO impresso, nao estimes\n\n'
+    + 'RESPONDE APENAS com este JSON (sem mais texto):\n'
+    + '{"raspada":true/false,"nome_jogo":"nome","resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":total euros ou null,"razao":"explicacao em 1 frase","detalhes":"o que viste em cada jogo/numero"}';
 
   fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers: headers,
-    body: JSON.stringify({
-      model:'claude-sonnet-4-5',
-      max_tokens:800,
-      messages:[{role:'user',content:[
-        {type:'image',source:{type:'base64',media_type:mime,data:base64}},
-        {type:'text',text:'Esta e uma raspadinha portuguesa. Analisa com MUITO cuidado e extrai em JSON:
-{
-  "nome_jogo": "nome do jogo",
-  "preco": numero em euros,
-  "tipo_jogo": "NUMEROS (comparar numeros) ou SIMBOLOS (encontrar simbolos iguais) ou OUTRO",
-  "regras": "copia EXATA das instrucoes impressas na raspadinha",
-  "como_ganhar": "descricao clara de como se ganha",
-  "numeros_sorte": [lista dos numeros da sorte se for jogo de numeros, senao null],
-  "raspada": true se a area de jogo foi raspada, false se ainda tem cobertura prateada intacta
-}
-Retorna APENAS o JSON sem mais texto.'}
-      ]}]
-    })
+    method:'POST', headers:headers,
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1500,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:prompt}]}]})
   })
-  .then(function(r){ return r.json(); })
-  .then(function(d1){
-    var rules={};
-    try{ rules=JSON.parse((d1.content[0].text||'{}').replace(/```json|```/g,'').trim()); }catch(e){}
-
-    if(rules.raspada===false){
-      hideLoading();
-      applyResult({resultado:'INCERTO',confianca:99,valor_estimado:null,razao:'Raspadinha por raspar',detalhes:'A raspadinha ainda não foi raspada. O cliente deve raspar todos os jogos primeiro.'});
-      return;
-    }
-
-    showLoading('Passo 2/2 — A analisar jogos...');
-
-    var tipoExtra = rules.tipo_jogo==='NUMEROS' ? '\nNUMEROS DA SORTE EXTRAIDOS NO PASSO 1: '+JSON.stringify(rules.numeros_sorte)+'\nINSTRUCAO CRITICA PARA JOGOS DE NUMEROS:\n1. Identifica os NUMEROS DA SORTE (linha do topo da area de jogo).\n2. Identifica os SEUS NUMEROS (numeros revelados pelo jogador).\n3. Compara cada numero do jogador com os numeros da sorte.\n4. Para cada correspondencia, le o VALOR EXATO impresso abaixo desse numero.\n5. Soma todos os premios encontrados.\n6. Se existir SIMBOLO MULTIPLICADOR (2X,5X,10X,20X,50X), multiplica o premio total.' : '\nINSTRUCAO CRITICA:\n1. Le EXATAMENTE os valores impressos na area raspada.\n2. Nao estimes - le o numero impresso.\n3. Simbolos especiais dao o valor impresso abaixo deles.';
-    var p2 = 'Raspadinha: "'+(rules.nome_jogo||type)+'" (€'+(rules.preco||'?')+')\n'+'REGRAS IMPRESSAS NA RASPADINHA:\n'+(rules.regras||'ver imagem')+'\nCOMO GANHAR:\n'+(rules.como_ganhar||'ver imagem')+tipoExtra+'\n\nINSTRUCOES CRITICAS PARA DETERMINAR O VALOR DO PREMIO:\n1. Le EXATAMENTE o valor numerico impresso na area raspada de cada jogo (ex: 2, 5, 10, 20).\n2. NAO estimes o valor - le o numero que esta IMPRESSO abaixo dos simbolos.\n3. Se vires o simbolo especial (ex: Aranha), o premio e o valor impresso ABAIXO desse simbolo nesse jogo.\n4. Soma APENAS os valores que consegues ler claramente na imagem.\n5. Se o valor nao estiver legivel, indica INCERTO para esse jogo.\n\nAnalisa cada jogo e le o valor exato impresso. Responde em JSON:\n{"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":soma exata dos euros lidos ou null,"razao":"resumo com valor exato lido","detalhes":"por cada jogo: simbolos vistos, valor impresso lido, resultado"}. APENAS JSON.';
-
-    return fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers: headers,
-      body: JSON.stringify({
-        model:'claude-sonnet-4-5',
-        max_tokens:1200,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:mime,data:base64}},
-          {type:'text',text:p2}
-        ]}]
-      })
-    });
-  })
-  .then(function(r){ if(r) return r.json(); })
-  .then(function(d2){
+  .then(function(r){return r.json();})
+  .then(function(d){
     hideLoading();
-    if(!d2){ showDemoResult(); return; }
+    if(d.error){applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API: '+d.error.message,detalhes:d.error.message});return;}
     var result={};
     try{
-      var rawText = d2.content[0].text||'{}';
-      // Try to extract JSON from response
-      var jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      result=JSON.parse(jsonMatch?jsonMatch[0]:rawText);
-      if(result.resultado==='PREMIO') result.resultado='PRÉMIO';
-      if(result.resultado==='SEM_PREMIO') result.resultado='SEM_PRÉMIO';
-    }catch(e){
-      // If JSON parse fails, check if API returned error
-      if(d2.error){
-        result={resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API: '+d2.error.message,detalhes:'Erro da API Anthropic: '+d2.error.message+'. Verifica a tua chave em Perfil.'};
-      } else {
-        result={resultado:'INCERTO',confianca:40,valor_estimado:null,razao:'Erro ao processar resposta',detalhes:'Resposta: '+(d2.content?d2.content[0].text:'vazia')};
+      var raw=(d.content&&d.content[0])?d.content[0].text:'{}';
+      var m=raw.match(/\{[\s\S]*\}/);
+      result=JSON.parse(m?m[0]:raw);
+      if(result.raspada===false){
+        result.resultado='INCERTO';result.confianca=99;
+        result.razao='Raspadinha por raspar — cliente deve raspar primeiro';
+        result.detalhes='A area de jogo ainda tem cobertura prateada intacta. O cliente deve raspar completamente e apresentar novamente.';
       }
+      if(result.resultado==='PREMIO')result.resultado='PRÉMIO';
+      if(result.resultado==='SEM_PREMIO')result.resultado='SEM_PRÉMIO';
+    }catch(e){
+      result={resultado:'INCERTO',confianca:30,valor_estimado:null,razao:'Erro ao processar resposta',detalhes:(d.content&&d.content[0])?d.content[0].text:e.message};
     }
     applyResult(result);
   })
   .catch(function(err){
     hideLoading();
-    console.error('API error:',err);
-    applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro: '+err.message,detalhes:'Erro de ligacao: '+err.message+'. Verifica a tua API Key em Perfil e tenta novamente.'});
+    applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro de ligacao',detalhes:err.message+' — Verifica a API Key em Perfil.'});
   });
 }
 
