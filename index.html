@@ -161,7 +161,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 input[type=file]{display:none}
 </style>
-<script defer>
+<script>
 
 // ── STATE ──
 var user = null;
@@ -263,12 +263,28 @@ function capturePhoto(){
   if(!camStream){ toast('⚠️ Câmara não ativa'); return; }
   c.width=v.videoWidth||640; c.height=v.videoHeight||480;
   c.getContext('2d').drawImage(v,0,0);
-  openResult(c.toDataURL('image/jpeg',0.85));
+  openResult(c.toDataURL('image/jpeg',0.95));
 }
 function onGallery(e){
   var f=e.target.files[0]; if(!f) return;
   var r=new FileReader();
-  r.onload=function(ev){ openResult(ev.target.result); };
+  r.onload=function(ev){
+    // Resize image to max 1600px for better API reading
+    var img=new Image();
+    img.onload=function(){
+      var maxW=1600, maxH=1600;
+      var w=img.width, h=img.height;
+      if(w>maxW||h>maxH){
+        var ratio=Math.min(maxW/w,maxH/h);
+        w=Math.round(w*ratio); h=Math.round(h*ratio);
+      }
+      var canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      openResult(canvas.toDataURL('image/jpeg',0.95));
+    };
+    img.src=ev.target.result;
+  };
   r.readAsDataURL(f);
   e.target.value='';
 }
@@ -484,17 +500,6 @@ function saveKey(){
   toast('✅ API Key guardada!');
 }
 
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', function(){
-  var saved=localStorage.getItem('ss_user');
-  if(saved){
-    try{ user=JSON.parse(saved); tickets=JSON.parse(localStorage.getItem('ss_tickets')||'[]'); showApp(); }
-    catch(e){ localStorage.clear(); }
-  }
-  // Verifica se já tem key
-  if(getKey()) $('apikey-box').style.display='none';
-});
-
 // ── BIND GLOBAL ──
 window.doLogin=doLogin;window.doRegister=doRegister;window.showTab=showTab;
 window.saveKey=saveKey;window.doLogout=doLogout;window.navTo=navTo;
@@ -503,11 +508,14 @@ window.filterH=filterH;window.exportCSV=exportCSV;
 window.closeModal=closeModal;window.saveTicket=saveTicket;
 window.updateDash=updateDash;
 
-// Fechar modal ao clicar fora
-$('modal-result').addEventListener('click',function(e){if(e.target===$('modal-result'))closeModal();});
+// ── INIT + BIND EVENTS (after DOM ready) ──
+document.addEventListener('DOMContentLoaded', function(){
 
-// ── EVENT LISTENERS ──
-function bindEvents(){
+  // Fechar modal ao clicar fora
+  var modalEl=$('modal-result');
+  if(modalEl) modalEl.addEventListener('click',function(e){if(e.target===modalEl)closeModal();});
+
+  // Bind all buttons
   var el;
   el=$('tab-login'); if(el) el.addEventListener('click',function(){showTab('login');});
   el=$('tab-reg'); if(el) el.addEventListener('click',function(){showTab('reg');});
@@ -515,8 +523,13 @@ function bindEvents(){
   el=$('btn-register'); if(el) el.addEventListener('click',doRegister);
   el=$('btn-savekey'); if(el) el.addEventListener('click',saveKey);
   el=$('btn-save'); if(el) el.addEventListener('click',saveTicket);
+  el=$('btn-logout'); if(el) el.addEventListener('click',doLogout);
+  el=document.querySelector('.cap-btn'); if(el) el.addEventListener('click',capturePhoto);
+  el=document.querySelector('.gal-btn'); if(el) el.addEventListener('click',function(){$('gal-inp').click();});
+  el=$('gal-inp'); if(el) el.addEventListener('change',onGallery);
+  el=document.querySelector('.bdis'); if(el) el.addEventListener('click',closeModal);
+  el=document.querySelector('[data-export]'); if(el) el.addEventListener('click',exportCSV);
 
-  // Nav items
   document.querySelectorAll('[data-nav]').forEach(function(el){
     el.addEventListener('click',function(){navTo(this.getAttribute('data-nav'));});
   });
@@ -524,16 +537,14 @@ function bindEvents(){
     el.addEventListener('click',function(){filterH(this.getAttribute('data-filter'),this);});
   });
 
-  el=document.querySelector('.cap-btn'); if(el) el.addEventListener('click',capturePhoto);
-  el=document.querySelector('.gal-btn'); if(el) el.addEventListener('click',function(){$('gal-inp').click();});
-  el=$('gal-inp'); if(el) el.addEventListener('change',onGallery);
-  el=document.querySelector('.bdis'); if(el) el.addEventListener('click',closeModal);
-  el=$('btn-logout'); if(el) el.addEventListener('click',doLogout);
-
-  var exportBtn=document.querySelector('[data-export]');
-  if(exportBtn) exportBtn.addEventListener('click',exportCSV);
-}
-document.addEventListener('DOMContentLoaded', bindEvents);
+  // Init user session
+  var saved=localStorage.getItem('ss_user');
+  if(saved){
+    try{ user=JSON.parse(saved); tickets=JSON.parse(localStorage.getItem('ss_tickets')||'[]'); showApp(); }
+    catch(e){ localStorage.clear(); }
+  }
+  if(getKey()) $('apikey-box').style.display='none';
+});
 
 </script>
 </head>
