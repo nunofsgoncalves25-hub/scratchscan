@@ -514,7 +514,17 @@ function analyzeTicket(imgData){
       max_tokens:800,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mime,data:base64}},
-        {type:'text',text:'Esta é uma raspadinha portuguesa. Extrai em JSON: {"nome_jogo":"nome","preco":numero,"regras":"instrucoes exatas impressas","como_ganhar":"como ganhar","raspada":true/false}. Retorna APENAS o JSON.'}
+        {type:'text',text:'Esta e uma raspadinha portuguesa. Analisa com MUITO cuidado e extrai em JSON:
+{
+  "nome_jogo": "nome do jogo",
+  "preco": numero em euros,
+  "tipo_jogo": "NUMEROS (comparar numeros) ou SIMBOLOS (encontrar simbolos iguais) ou OUTRO",
+  "regras": "copia EXATA das instrucoes impressas na raspadinha",
+  "como_ganhar": "descricao clara de como se ganha",
+  "numeros_sorte": [lista dos numeros da sorte se for jogo de numeros, senao null],
+  "raspada": true se a area de jogo foi raspada, false se ainda tem cobertura prateada intacta
+}
+Retorna APENAS o JSON sem mais texto.'}
       ]}]
     })
   })
@@ -531,7 +541,8 @@ function analyzeTicket(imgData){
 
     showLoading('Passo 2/2 — A analisar jogos...');
 
-    var p2 = 'Raspadinha: "'+(rules.nome_jogo||type)+'" (€'+(rules.preco||'?')+')\n'+'REGRAS IMPRESSAS NA RASPADINHA:\n'+(rules.regras||'ver imagem')+'\nCOMO GANHAR:\n'+(rules.como_ganhar||'ver imagem')+'\n\nINSTRUCOES CRITICAS PARA DETERMINAR O VALOR DO PREMIO:\n1. Le EXATAMENTE o valor numerico impresso na area raspada de cada jogo (ex: 2, 5, 10, 20).\n2. NAO estimes o valor - le o numero que esta IMPRESSO abaixo dos simbolos.\n3. Se vires o simbolo especial (ex: Aranha), o premio e o valor impresso ABAIXO desse simbolo nesse jogo.\n4. Soma APENAS os valores que consegues ler claramente na imagem.\n5. Se o valor nao estiver legivel, indica INCERTO para esse jogo.\n\nAnalisa cada jogo e le o valor exato impresso. Responde em JSON:\n{"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":soma exata dos euros lidos ou null,"razao":"resumo com valor exato lido","detalhes":"por cada jogo: simbolos vistos, valor impresso lido, resultado"}. APENAS JSON.';
+    var tipoExtra = rules.tipo_jogo==='NUMEROS' ? '\nNUMEROS DA SORTE EXTRAIDOS NO PASSO 1: '+JSON.stringify(rules.numeros_sorte)+'\nINSTRUCAO CRITICA PARA JOGOS DE NUMEROS:\n1. Identifica os NUMEROS DA SORTE (linha do topo da area de jogo).\n2. Identifica os SEUS NUMEROS (numeros revelados pelo jogador).\n3. Compara cada numero do jogador com os numeros da sorte.\n4. Para cada correspondencia, le o VALOR EXATO impresso abaixo desse numero.\n5. Soma todos os premios encontrados.\n6. Se existir SIMBOLO MULTIPLICADOR (2X,5X,10X,20X,50X), multiplica o premio total.' : '\nINSTRUCAO CRITICA:\n1. Le EXATAMENTE os valores impressos na area raspada.\n2. Nao estimes - le o numero impresso.\n3. Simbolos especiais dao o valor impresso abaixo deles.';
+    var p2 = 'Raspadinha: "'+(rules.nome_jogo||type)+'" (€'+(rules.preco||'?')+')\n'+'REGRAS IMPRESSAS NA RASPADINHA:\n'+(rules.regras||'ver imagem')+'\nCOMO GANHAR:\n'+(rules.como_ganhar||'ver imagem')+tipoExtra+'\n\nINSTRUCOES CRITICAS PARA DETERMINAR O VALOR DO PREMIO:\n1. Le EXATAMENTE o valor numerico impresso na area raspada de cada jogo (ex: 2, 5, 10, 20).\n2. NAO estimes o valor - le o numero que esta IMPRESSO abaixo dos simbolos.\n3. Se vires o simbolo especial (ex: Aranha), o premio e o valor impresso ABAIXO desse simbolo nesse jogo.\n4. Soma APENAS os valores que consegues ler claramente na imagem.\n5. Se o valor nao estiver legivel, indica INCERTO para esse jogo.\n\nAnalisa cada jogo e le o valor exato impresso. Responde em JSON:\n{"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":soma exata dos euros lidos ou null,"razao":"resumo com valor exato lido","detalhes":"por cada jogo: simbolos vistos, valor impresso lido, resultado"}. APENAS JSON.';
 
     return fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
