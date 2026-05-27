@@ -506,36 +506,37 @@ window.saveKey=saveKey;window.doLogout=doLogout;window.navTo=navTo;
 window.capturePhoto=capturePhoto;window.onGallery=onGallery;
 window.filterH=filterH;window.exportCSV=exportCSV;
 window.closeModal=closeModal;window.saveTicket=saveTicket;
-window.updateDash=updateDash;
 
-// ── INIT + BIND EVENTS (after DOM ready) ──
+// ── INIT + BIND EVENTS ──
 document.addEventListener('DOMContentLoaded', function(){
 
-  // Fechar modal ao clicar fora
-  var modalEl=$('modal-result');
-  if(modalEl) modalEl.addEventListener('click',function(e){if(e.target===modalEl)closeModal();});
+  // Event delegation - catches all clicks regardless of when elements render
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-nav]');
+    if(t){ navTo(t.getAttribute('data-nav')); return; }
 
-  // Bind all buttons
-  var el;
-  el=$('tab-login'); if(el) el.addEventListener('click',function(){showTab('login');});
-  el=$('tab-reg'); if(el) el.addEventListener('click',function(){showTab('reg');});
-  el=$('btn-login'); if(el) el.addEventListener('click',doLogin);
-  el=$('btn-register'); if(el) el.addEventListener('click',doRegister);
-  el=$('btn-savekey'); if(el) el.addEventListener('click',saveKey);
-  el=$('btn-save'); if(el) el.addEventListener('click',saveTicket);
-  el=$('btn-logout'); if(el) el.addEventListener('click',doLogout);
-  el=document.querySelector('.cap-btn'); if(el) el.addEventListener('click',capturePhoto);
-  el=document.querySelector('.gal-btn'); if(el) el.addEventListener('click',function(){$('gal-inp').click();});
-  el=$('gal-inp'); if(el) el.addEventListener('change',onGallery);
-  el=document.querySelector('.bdis'); if(el) el.addEventListener('click',closeModal);
-  el=document.querySelector('[data-export]'); if(el) el.addEventListener('click',exportCSV);
+    var f = e.target.closest('[data-filter]');
+    if(f){ filterH(f.getAttribute('data-filter'), f); return; }
 
-  document.querySelectorAll('[data-nav]').forEach(function(el){
-    el.addEventListener('click',function(){navTo(this.getAttribute('data-nav'));});
+    var id = e.target.id || (e.target.closest('[id]') && e.target.closest('[id]').id);
+    switch(id){
+      case 'btn-login': doLogin(); break;
+      case 'btn-register': doRegister(); break;
+      case 'btn-savekey': saveKey(); break;
+      case 'btn-save': saveTicket(); break;
+      case 'btn-logout': doLogout(); break;
+      case 'tab-login': showTab('login'); break;
+      case 'tab-reg': showTab('reg'); break;
+    }
+
+    if(e.target.classList.contains('cap-btn')) capturePhoto();
+    if(e.target.closest('.gal-btn')) $('gal-inp').click();
+    if(e.target.closest('.bdis')) closeModal();
+    if(e.target.closest('[data-export]')) exportCSV();
+    if(e.target===($('modal-result'))) closeModal();
   });
-  document.querySelectorAll('[data-filter]').forEach(function(el){
-    el.addEventListener('click',function(){filterH(this.getAttribute('data-filter'),this);});
-  });
+
+  $('gal-inp').addEventListener('change', onGallery);
 
   // Init user session
   var saved=localStorage.getItem('ss_user');
