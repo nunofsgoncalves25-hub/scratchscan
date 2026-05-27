@@ -161,178 +161,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 input[type=file]{display:none}
 </style>
-</head>
-<body>
+<script defer>
 
-<!-- AUTH -->
-<div class="screen active" id="sc-auth">
-  <div class="logo-row"><div class="logo-icon">🎰</div><div class="logo-name">ScratchScan</div></div>
-  <div class="auth-title">Bem-vindo</div>
-  <div class="auth-sub">Plataforma de validação de raspadinhas</div>
-  <div class="tabs">
-    <div class="tab active" id="tab-login" onclick="showTab('login')">Entrar</div>
-    <div class="tab" id="tab-reg" onclick="showTab('reg')">Registar</div>
-  </div>
-
-  <div id="form-login" class="form">
-    <div class="fg"><div class="lbl">Email</div><input class="inp" type="email" id="l-email" placeholder="operador@loja.pt"></div>
-    <div class="fg"><div class="lbl">Password</div><input class="inp" type="password" id="l-pass" placeholder="••••••••"></div>
-    <div id="apikey-box" style="display:none">
-      <div class="api-box">⚙️ Primeira utilização: introduz a tua Claude API Key</div>
-      <div class="fg"><div class="lbl">Claude API Key</div><input class="inp" type="password" id="l-apikey" placeholder="A tua chave API..."></div>
-    </div>
-    <button class="btn" onclick="doLogin()">Entrar na Plataforma →</button>
-    <div class="legal">Ao entrar aceita os Termos e Condições e Política de Privacidade.<br>Dados tratados em conformidade com o RGPD.</div>
-  </div>
-
-  <div id="form-reg" class="form" style="display:none">
-    <div class="notice"><b>Código de convite obrigatório.</b><br>Contacte o administrador.</div>
-    <div class="fg"><div class="lbl">Código de Convite</div><input class="inp" type="text" id="r-code" placeholder="XXXX-XXXX" style="text-transform:uppercase;letter-spacing:2px"></div>
-    <div class="fg"><div class="lbl">Nome</div><input class="inp" type="text" id="r-name" placeholder="João Silva"></div>
-    <div class="fg"><div class="lbl">Email</div><input class="inp" type="email" id="r-email" placeholder="operador@loja.pt"></div>
-    <div class="fg"><div class="lbl">Password</div><input class="inp" type="password" id="r-pass" placeholder="Mín. 8 caracteres"></div>
-    <button class="btn" onclick="doRegister()">Criar Conta →</button>
-    <div class="legal">Ao registar aceita os Termos e Condições e Política de Privacidade.<br>RGPD (UE) 2016/679.</div>
-  </div>
-</div>
-
-<!-- APP -->
-<div class="screen" id="sc-app">
-
-  <!-- DASHBOARD -->
-  <div class="page active" id="pg-dash">
-    <div class="ph"><div class="ph-row"><div><div class="pt">Hoje</div><div class="ps" id="d-date"></div></div><div class="av" id="d-av" onclick="navTo('profile')">?</div></div></div>
-    <div class="grid2">
-      <div class="kpi" style="--kc:var(--acc)"><div class="kpi-l">Total</div><div class="kpi-v" id="k-total">0</div><div class="kpi-s">hoje</div></div>
-      <div class="kpi" style="--kc:var(--green)"><div class="kpi-l">Prémios</div><div class="kpi-v" id="k-prize" style="color:var(--green)">0</div><div class="kpi-s" id="k-pct">0%</div></div>
-      <div class="kpi" style="--kc:var(--red)"><div class="kpi-l">Sem Prémio</div><div class="kpi-v" id="k-no" style="color:var(--red)">0</div><div class="kpi-s">confirmadas</div></div>
-      <div class="kpi" style="--kc:var(--yellow)"><div class="kpi-l">Incertas</div><div class="kpi-v" id="k-unc" style="color:var(--yellow)">0</div><div class="kpi-s">verificar</div></div>
-    </div>
-    <div class="sec">Ações Rápidas</div>
-    <div class="ql">
-      <div class="qb" onclick="navTo('scan')"><span>📷</span><span>Scan</span></div>
-      <div class="qb" onclick="navTo('history')"><span>📋</span><span>Histórico</span></div>
-      <div class="qb" onclick="navTo('reports')"><span>📊</span><span>Relatório</span></div>
-      <div class="qb" onclick="navTo('profile')"><span>⚙️</span><span>Perfil</span></div>
-    </div>
-    <div class="sec">Últimas Raspadinhas</div>
-    <div class="tlist" id="d-list"><div style="text-align:center;color:var(--muted);font-family:var(--fm);font-size:13px;padding:20px">Sem registos hoje.</div></div>
-  </div>
-
-  <!-- SCAN -->
-  <div class="page" id="pg-scan" style="padding-bottom:0">
-    <div class="cam-wrap">
-      <video id="cam-video" autoplay playsinline muted></video>
-      <canvas id="cam-canvas" style="display:none"></canvas>
-      <div class="cam-ov">
-        <div class="cam-frame"><div class="cf-bl"></div><div class="cf-br"></div><div class="cam-line"></div></div>
-        <div class="cam-hint">Posicione a raspadinha dentro da moldura</div>
-      </div>
-      <div class="gal-btn" onclick="document.getElementById('gal-inp').click()"><span>🖼️</span><span>GALERIA</span></div>
-    </div>
-    <div class="scan-bar">
-      <div class="type-sel">
-        <div class="type-lbl">Tipo</div>
-        <select class="type-inp" id="type-sel">
-          <option value="scml">Raspadinha SCML</option>
-          <option value="geral">Raspadinha Geral</option>
-          <option value="ouro">Raspa Ouro</option>
-          <option value="prata">Raspa Prata</option>
-          <option value="outros">Outros</option>
-        </select>
-      </div>
-      <button class="cap-btn" onclick="capturePhoto()">📸</button>
-    </div>
-    <input type="file" id="gal-inp" accept="image/*" onchange="onGallery(event)">
-  </div>
-
-  <!-- HISTORY -->
-  <div class="page" id="pg-history">
-    <div class="ph"><div class="pt">Histórico</div><div class="ps">Todas as raspadinhas</div></div>
-    <div class="filter-bar">
-      <div class="fc active" onclick="filterH('all',this)">Todas</div>
-      <div class="fc" onclick="filterH('PRÉMIO',this)">Com Prémio</div>
-      <div class="fc" onclick="filterH('SEM_PRÉMIO',this)">Sem Prémio</div>
-      <div class="fc" onclick="filterH('INCERTO',this)">Incertas</div>
-    </div>
-    <div class="tlist" id="h-list"></div>
-  </div>
-
-  <!-- REPORTS -->
-  <div class="page" id="pg-reports">
-    <div class="ph"><div class="pt">Relatórios</div><div class="ps" id="rep-date"></div></div>
-    <div class="grid2" style="grid-template-columns:1fr 1fr">
-      <div class="kpi" style="--kc:var(--acc)"><div class="kpi-l">Total</div><div class="kpi-v" id="r-total">0</div></div>
-      <div class="kpi" style="--kc:var(--green)"><div class="kpi-l">Prémios</div><div class="kpi-v" id="r-prize" style="color:var(--green)">0</div></div>
-      <div class="kpi" style="--kc:var(--red)"><div class="kpi-l">Sem Prémio</div><div class="kpi-v" id="r-no" style="color:var(--red)">0</div></div>
-      <div class="kpi" style="--kc:var(--yellow)"><div class="kpi-l">Taxa</div><div class="kpi-v" id="r-rate" style="color:var(--yellow)">0%</div></div>
-    </div>
-    <div style="padding:0 16px">
-      <button onclick="exportCSV()" style="width:100%;background:var(--s);border:1px solid var(--acc);color:var(--acc);border-radius:10px;padding:13px;font-size:14px;font-family:var(--fh);font-weight:600;cursor:pointer;margin-bottom:10px">⬇️ Exportar CSV</button>
-    </div>
-  </div>
-
-  <!-- PROFILE -->
-  <div class="page" id="pg-profile">
-    <div class="ph"><div class="pt">Perfil</div><div class="ps">Conta e configurações</div></div>
-    <div class="pcard">
-      <div class="pav" id="p-av">?</div>
-      <div class="pname" id="p-name">-</div>
-      <div class="prole" id="p-role">Operador</div>
-    </div>
-    <div class="api-cfg">
-      <div class="api-cfg-title">⚙️ Claude API Key</div>
-      <div class="fg" style="margin-bottom:10px"><input class="inp" type="password" id="cfg-key" placeholder="A tua chave API..." style="font-size:13px;padding:10px 12px"></div>
-      <button onclick="saveKey()" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-family:var(--fh);font-weight:600;cursor:pointer">Guardar Chave</button>
-      <div id="key-status" style="font-size:12px;font-family:var(--fm);color:var(--muted);margin-top:8px"></div>
-    </div>
-    <div class="mitem" onclick="doLogout()"><span class="mic">🚪</span><span class="mlbl" style="color:var(--red)">Terminar Sessão</span><span class="marr">›</span></div>
-    <div style="height:16px"></div>
-  </div>
-
-  <!-- NAV -->
-  <div class="nav">
-    <div class="ni active" id="ni-dash" onclick="navTo('dash')"><div class="ni-ic">🏠</div><div>Início</div></div>
-    <div class="ni" id="ni-history" onclick="navTo('history')"><div class="ni-ic">📋</div><div>Histórico</div></div>
-    <div class="nav-scan"><div class="scan-fab" onclick="navTo('scan')">📷</div></div>
-    <div class="ni" id="ni-reports" onclick="navTo('reports')"><div class="ni-ic">📊</div><div>Relatório</div></div>
-    <div class="ni" id="ni-profile" onclick="navTo('profile')"><div class="ni-ic">👤</div><div>Perfil</div></div>
-  </div>
-</div>
-
-<!-- RESULT MODAL -->
-<div class="overlay" id="modal-result">
-  <div class="sheet">
-    <div class="handle"></div>
-    <div class="rbadge unc" id="rb">
-      <div class="rico" id="r-ico">🔍</div>
-      <div class="rtitle" id="r-title">A analisar...</div>
-      <div class="rval" id="r-val"></div>
-      <div class="rconf" id="r-conf"></div>
-    </div>
-    <div class="rwarn"><span>⚠️</span><span><b>Sugestão automática.</b> Validação oficial obrigatória no terminal SCML.</span></div>
-    <div class="rimg" id="r-img-wrap" style="display:none"><img id="r-img" src="" alt=""></div>
-    <div class="ranalysis"><div class="ralt">Análise IA</div><div class="ratxt" id="r-txt">A processar...</div></div>
-    <div class="rform">
-      <div class="rrow">
-        <div class="fg"><div class="lbl">Lote / Série</div><input class="inp" type="text" id="r-lote" placeholder="Opcional" style="font-size:13px;padding:9px 11px"></div>
-        <div class="fg"><div class="lbl">Valor (€)</div><input class="inp" type="number" id="r-valor" placeholder="0.00" style="font-size:13px;padding:9px 11px"></div>
-      </div>
-      <div class="fg"><div class="lbl">Notas</div><input class="inp" type="text" id="r-notas" placeholder="Observações..." style="font-size:13px;padding:9px 11px"></div>
-    </div>
-    <div class="ract">
-      <button class="bdis" onclick="closeModal()">Descartar</button>
-      <button class="bconf" id="btn-save" onclick="saveTicket()" disabled>✓ Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- LOADING -->
-<div id="loading"><div class="spinner"></div><div class="ltxt" id="l-txt">A processar...</div></div>
-<!-- TOAST -->
-<div id="toast"></div>
-
-<script>
 // ── STATE ──
 var user = null;
 var tickets = [];
@@ -662,8 +492,188 @@ document.addEventListener('DOMContentLoaded', function(){
   if(getKey()) $('apikey-box').style.display='none';
 });
 
+// ── BIND GLOBAL ──
+window.doLogin=doLogin;window.doRegister=doRegister;window.showTab=showTab;
+window.saveKey=saveKey;window.doLogout=doLogout;window.navTo=navTo;
+window.capturePhoto=capturePhoto;window.onGallery=onGallery;
+window.filterH=filterH;window.exportCSV=exportCSV;
+window.closeModal=closeModal;window.saveTicket=saveTicket;
+window.updateDash=updateDash;
+
 // Fechar modal ao clicar fora
 $('modal-result').addEventListener('click',function(e){if(e.target===$('modal-result'))closeModal();});
+
 </script>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="screen active" id="sc-auth">
+  <div class="logo-row"><div class="logo-icon">🎰</div><div class="logo-name">ScratchScan</div></div>
+  <div class="auth-title">Bem-vindo</div>
+  <div class="auth-sub">Plataforma de validação de raspadinhas</div>
+  <div class="tabs">
+    <div class="tab active" id="tab-login" onclick="showTab('login')">Entrar</div>
+    <div class="tab" id="tab-reg" onclick="showTab('reg')">Registar</div>
+  </div>
+
+  <div id="form-login" class="form">
+    <div class="fg"><div class="lbl">Email</div><input class="inp" type="email" id="l-email" placeholder="operador@loja.pt"></div>
+    <div class="fg"><div class="lbl">Password</div><input class="inp" type="password" id="l-pass" placeholder="••••••••"></div>
+    <div id="apikey-box" style="display:none">
+      <div class="api-box">⚙️ Primeira utilização: introduz a tua Claude API Key</div>
+      <div class="fg"><div class="lbl">Claude API Key</div><input class="inp" type="password" id="l-apikey" placeholder="A tua chave API..."></div>
+    </div>
+    <button class="btn" onclick="doLogin()">Entrar na Plataforma →</button>
+    <div class="legal">Ao entrar aceita os Termos e Condições e Política de Privacidade.<br>Dados tratados em conformidade com o RGPD.</div>
+  </div>
+
+  <div id="form-reg" class="form" style="display:none">
+    <div class="notice"><b>Código de convite obrigatório.</b><br>Contacte o administrador.</div>
+    <div class="fg"><div class="lbl">Código de Convite</div><input class="inp" type="text" id="r-code" placeholder="XXXX-XXXX" style="text-transform:uppercase;letter-spacing:2px"></div>
+    <div class="fg"><div class="lbl">Nome</div><input class="inp" type="text" id="r-name" placeholder="João Silva"></div>
+    <div class="fg"><div class="lbl">Email</div><input class="inp" type="email" id="r-email" placeholder="operador@loja.pt"></div>
+    <div class="fg"><div class="lbl">Password</div><input class="inp" type="password" id="r-pass" placeholder="Mín. 8 caracteres"></div>
+    <button class="btn" onclick="doRegister()">Criar Conta →</button>
+    <div class="legal">Ao registar aceita os Termos e Condições e Política de Privacidade.<br>RGPD (UE) 2016/679.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="screen" id="sc-app">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="pg-dash">
+    <div class="ph"><div class="ph-row"><div><div class="pt">Hoje</div><div class="ps" id="d-date"></div></div><div class="av" id="d-av" onclick="navTo('profile')">?</div></div></div>
+    <div class="grid2">
+      <div class="kpi" style="--kc:var(--acc)"><div class="kpi-l">Total</div><div class="kpi-v" id="k-total">0</div><div class="kpi-s">hoje</div></div>
+      <div class="kpi" style="--kc:var(--green)"><div class="kpi-l">Prémios</div><div class="kpi-v" id="k-prize" style="color:var(--green)">0</div><div class="kpi-s" id="k-pct">0%</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-l">Sem Prémio</div><div class="kpi-v" id="k-no" style="color:var(--red)">0</div><div class="kpi-s">confirmadas</div></div>
+      <div class="kpi" style="--kc:var(--yellow)"><div class="kpi-l">Incertas</div><div class="kpi-v" id="k-unc" style="color:var(--yellow)">0</div><div class="kpi-s">verificar</div></div>
+    </div>
+    <div class="sec">Ações Rápidas</div>
+    <div class="ql">
+      <div class="qb" onclick="navTo('scan')"><span>📷</span><span>Scan</span></div>
+      <div class="qb" onclick="navTo('history')"><span>📋</span><span>Histórico</span></div>
+      <div class="qb" onclick="navTo('reports')"><span>📊</span><span>Relatório</span></div>
+      <div class="qb" onclick="navTo('profile')"><span>⚙️</span><span>Perfil</span></div>
+    </div>
+    <div class="sec">Últimas Raspadinhas</div>
+    <div class="tlist" id="d-list"><div style="text-align:center;color:var(--muted);font-family:var(--fm);font-size:13px;padding:20px">Sem registos hoje.</div></div>
+  </div>
+
+  <!-- SCAN -->
+  <div class="page" id="pg-scan" style="padding-bottom:0">
+    <div class="cam-wrap">
+      <video id="cam-video" autoplay playsinline muted></video>
+      <canvas id="cam-canvas" style="display:none"></canvas>
+      <div class="cam-ov">
+        <div class="cam-frame"><div class="cf-bl"></div><div class="cf-br"></div><div class="cam-line"></div></div>
+        <div class="cam-hint">Posicione a raspadinha dentro da moldura</div>
+      </div>
+      <div class="gal-btn" onclick="document.getElementById('gal-inp').click()"><span>🖼️</span><span>GALERIA</span></div>
+    </div>
+    <div class="scan-bar">
+      <div class="type-sel">
+        <div class="type-lbl">Tipo</div>
+        <select class="type-inp" id="type-sel">
+          <option value="scml">Raspadinha SCML</option>
+          <option value="geral">Raspadinha Geral</option>
+          <option value="ouro">Raspa Ouro</option>
+          <option value="prata">Raspa Prata</option>
+          <option value="outros">Outros</option>
+        </select>
+      </div>
+      <button class="cap-btn" onclick="capturePhoto()">📸</button>
+    </div>
+    <input type="file" id="gal-inp" accept="image/*" onchange="onGallery(event)">
+  </div>
+
+  <!-- HISTORY -->
+  <div class="page" id="pg-history">
+    <div class="ph"><div class="pt">Histórico</div><div class="ps">Todas as raspadinhas</div></div>
+    <div class="filter-bar">
+      <div class="fc active" onclick="filterH('all',this)">Todas</div>
+      <div class="fc" onclick="filterH('PRÉMIO',this)">Com Prémio</div>
+      <div class="fc" onclick="filterH('SEM_PRÉMIO',this)">Sem Prémio</div>
+      <div class="fc" onclick="filterH('INCERTO',this)">Incertas</div>
+    </div>
+    <div class="tlist" id="h-list"></div>
+  </div>
+
+  <!-- REPORTS -->
+  <div class="page" id="pg-reports">
+    <div class="ph"><div class="pt">Relatórios</div><div class="ps" id="rep-date"></div></div>
+    <div class="grid2" style="grid-template-columns:1fr 1fr">
+      <div class="kpi" style="--kc:var(--acc)"><div class="kpi-l">Total</div><div class="kpi-v" id="r-total">0</div></div>
+      <div class="kpi" style="--kc:var(--green)"><div class="kpi-l">Prémios</div><div class="kpi-v" id="r-prize" style="color:var(--green)">0</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-l">Sem Prémio</div><div class="kpi-v" id="r-no" style="color:var(--red)">0</div></div>
+      <div class="kpi" style="--kc:var(--yellow)"><div class="kpi-l">Taxa</div><div class="kpi-v" id="r-rate" style="color:var(--yellow)">0%</div></div>
+    </div>
+    <div style="padding:0 16px">
+      <button onclick="exportCSV()" style="width:100%;background:var(--s);border:1px solid var(--acc);color:var(--acc);border-radius:10px;padding:13px;font-size:14px;font-family:var(--fh);font-weight:600;cursor:pointer;margin-bottom:10px">⬇️ Exportar CSV</button>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="page" id="pg-profile">
+    <div class="ph"><div class="pt">Perfil</div><div class="ps">Conta e configurações</div></div>
+    <div class="pcard">
+      <div class="pav" id="p-av">?</div>
+      <div class="pname" id="p-name">-</div>
+      <div class="prole" id="p-role">Operador</div>
+    </div>
+    <div class="api-cfg">
+      <div class="api-cfg-title">⚙️ Claude API Key</div>
+      <div class="fg" style="margin-bottom:10px"><input class="inp" type="password" id="cfg-key" placeholder="A tua chave API..." style="font-size:13px;padding:10px 12px"></div>
+      <button onclick="saveKey()" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-family:var(--fh);font-weight:600;cursor:pointer">Guardar Chave</button>
+      <div id="key-status" style="font-size:12px;font-family:var(--fm);color:var(--muted);margin-top:8px"></div>
+    </div>
+    <div class="mitem" onclick="doLogout()"><span class="mic">🚪</span><span class="mlbl" style="color:var(--red)">Terminar Sessão</span><span class="marr">›</span></div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="ni active" id="ni-dash" onclick="navTo('dash')"><div class="ni-ic">🏠</div><div>Início</div></div>
+    <div class="ni" id="ni-history" onclick="navTo('history')"><div class="ni-ic">📋</div><div>Histórico</div></div>
+    <div class="nav-scan"><div class="scan-fab" onclick="navTo('scan')">📷</div></div>
+    <div class="ni" id="ni-reports" onclick="navTo('reports')"><div class="ni-ic">📊</div><div>Relatório</div></div>
+    <div class="ni" id="ni-profile" onclick="navTo('profile')"><div class="ni-ic">👤</div><div>Perfil</div></div>
+  </div>
+</div>
+
+<!-- RESULT MODAL -->
+<div class="overlay" id="modal-result">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="rbadge unc" id="rb">
+      <div class="rico" id="r-ico">🔍</div>
+      <div class="rtitle" id="r-title">A analisar...</div>
+      <div class="rval" id="r-val"></div>
+      <div class="rconf" id="r-conf"></div>
+    </div>
+    <div class="rwarn"><span>⚠️</span><span><b>Sugestão automática.</b> Validação oficial obrigatória no terminal SCML.</span></div>
+    <div class="rimg" id="r-img-wrap" style="display:none"><img id="r-img" src="" alt=""></div>
+    <div class="ranalysis"><div class="ralt">Análise IA</div><div class="ratxt" id="r-txt">A processar...</div></div>
+    <div class="rform">
+      <div class="rrow">
+        <div class="fg"><div class="lbl">Lote / Série</div><input class="inp" type="text" id="r-lote" placeholder="Opcional" style="font-size:13px;padding:9px 11px"></div>
+        <div class="fg"><div class="lbl">Valor (€)</div><input class="inp" type="number" id="r-valor" placeholder="0.00" style="font-size:13px;padding:9px 11px"></div>
+      </div>
+      <div class="fg"><div class="lbl">Notas</div><input class="inp" type="text" id="r-notas" placeholder="Observações..." style="font-size:13px;padding:9px 11px"></div>
+    </div>
+    <div class="ract">
+      <button class="bdis" onclick="closeModal()">Descartar</button>
+      <button class="bconf" id="btn-save" onclick="saveTicket()" disabled>✓ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading"><div class="spinner"></div><div class="ltxt" id="l-txt">A processar...</div></div>
+<!-- TOAST -->
+<div id="toast"></div>
+
 </body>
 </html>
