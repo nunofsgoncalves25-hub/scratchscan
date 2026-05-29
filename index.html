@@ -2,143 +2,1121 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="mobile-web-app-capable" content="yes" />
-<title>ScratchScan Pro v6</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#07070d" />
+<title>ScratchScan Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080912;--card:#111320;--card2:#171a2b;--line:#ffffff14;--txt:#f4f6ff;--mut:#8b91ad;--acc:#705cff;--acc2:#ff5d8f;--ok:#00e5a0;--bad:#ff4d6d;--warn:#ffd166;--r:16px;font-family:Inter,system-ui,sans-serif}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html,body{height:100%;background:var(--bg);color:var(--txt);overflow:hidden}.mono{font-family:'DM Mono',monospace}.screen{position:absolute;inset:0;display:none;flex-direction:column}.screen.active{display:flex}.top{padding:22px 18px 12px}.brand{display:flex;gap:10px;align-items:center}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-size:22px}.brand h1{font-size:21px;font-weight:900}.sub{color:var(--mut);font-size:12px;margin-top:2px}.page{display:none;flex-direction:column;height:100%;padding-bottom:78px;overflow:auto}.page.active{display:flex}.nav{position:absolute;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:20}.nav button{flex:1;background:none;border:0;color:var(--mut);padding:11px 4px;font-size:11px;font-family:'DM Mono',monospace}.nav button.active{color:var(--acc)}.nav b{display:block;font-size:22px;margin-bottom:2px}.fab{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;margin:-20px auto 0;color:white;font-size:24px;box-shadow:0 8px 26px #705cff55}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 16px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}.kpi .l{font-size:11px;color:var(--mut);font-family:'DM Mono',monospace;text-transform:uppercase}.kpi .v{font-size:28px;font-weight:900;margin-top:4px}.section{font-size:14px;font-weight:800;padding:14px 16px 8px}.list{display:flex;flex-direction:column;gap:9px;padding:0 16px 18px}.item{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;gap:10px;align-items:center}.thumb{width:52px;height:40px;border-radius:9px;background:var(--card2);overflow:hidden;display:grid;place-items:center}.thumb img{width:100%;height:100%;object-fit:cover}.itxt{flex:1;min-width:0}.itxt b{font-size:13px}.itxt p{font-size:11px;color:var(--mut);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.badge{font-family:'DM Mono',monospace;font-size:11px;border-radius:999px;padding:4px 8px}.b-ok{background:#00e5a022;color:var(--ok)}.b-bad{background:#ff4d6d22;color:var(--bad)}.b-warn{background:#ffd16622;color:var(--warn)}.btn{border:0;border-radius:12px;padding:13px 14px;font-weight:800;color:white;background:linear-gradient(135deg,var(--acc),#8b5cf6);font-size:14px}.btn.secondary{background:var(--card2);border:1px solid var(--line);color:var(--txt)}.btn.ok{background:var(--ok);color:#00140e}.btn.bad{background:var(--bad)}.btn.warn{background:var(--warn);color:#1a1200}.form{padding:0 16px;display:flex;flex-direction:column;gap:10px}.fg label{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;font-family:'DM Mono',monospace;margin:0 0 5px}.inp,select,textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;color:var(--txt);padding:12px;font-size:14px;outline:none}textarea{min-height:84px;resize:vertical}.cam{height:100%;display:flex;flex-direction:column;background:#000}.viewer{flex:1;position:relative;overflow:hidden;display:grid;place-items:center}.viewer video,.viewer img{width:100%;height:100%;object-fit:cover}.frame{position:absolute;width:min(88vw,370px);height:min(62vw,260px);border:2px solid #ffffffcc;border-radius:18px;box-shadow:0 0 0 9999px #0008}.hint{position:absolute;bottom:22px;background:#0009;color:#fff;border:1px solid #fff2;border-radius:999px;padding:8px 12px;font-size:12px;font-family:'DM Mono',monospace}.bar{background:var(--card);border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 64px 64px;gap:10px;align-items:end}.round{width:62px;height:62px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));font-size:25px}.round.gal{background:#fff;color:#111}.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:flex-end;z-index:80;backdrop-filter:blur(7px)}.overlay.open{display:flex}.sheet{width:100%;max-height:94vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:12px 16px calc(22px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}.handle{width:44px;height:4px;background:#fff2;border-radius:4px;margin:0 auto 14px}.resultBox{border-radius:18px;padding:18px;text-align:center;margin-bottom:12px;border:1px solid var(--line)}.resultBox.ok{background:#00e5a014;border-color:#00e5a055}.resultBox.bad{background:#ff4d6d14;border-color:#ff4d6d55}.resultBox.warn{background:#ffd16614;border-color:#ffd16655}.resultBox .ico{font-size:42px}.resultBox h2{font-size:21px;margin-top:4px}.value{font-size:34px;font-weight:900;color:var(--ok);margin-top:4px}.small{font-size:12px;color:var(--mut);line-height:1.45}.warnLine{background:#ffd16612;border:1px solid #ffd16640;color:var(--warn);padding:10px;border-radius:12px;font-size:12px;margin:10px 0}.analysis{white-space:pre-wrap;background:#090a12;border:1px solid var(--line);border-radius:14px;padding:12px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.45;color:#dce1ff}.photo{border-radius:14px;overflow:hidden;margin:10px 0;border:1px solid var(--line)}.photo img{width:100%;display:block}.loading{position:fixed;inset:0;background:#000b;display:none;z-index:120;align-items:center;justify-content:center;flex-direction:column;gap:12px}.loading.open{display:flex}.spin{width:44px;height:44px;border-radius:50%;border:3px solid #ffffff20;border-top-color:var(--acc);animation:s 1s linear infinite}@keyframes s{to{transform:rotate(360deg)}}.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--card);border:1px solid var(--line);padding:10px 14px;border-radius:12px;font-family:'DM Mono',monospace;font-size:12px;opacity:0;z-index:200;transition:.25s;white-space:nowrap}.toast.show{opacity:1}.pillrow{display:flex;gap:8px;overflow:auto;padding:0 16px 12px}.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;color:var(--mut);padding:7px 12px;font-size:12px;font-family:'DM Mono',monospace}.pill.active{background:var(--acc);color:white}.modebox{margin:0 16px 12px;background:#705cff12;border:1px solid #705cff3d;border-radius:14px;padding:12px;color:#cfcaff;font-size:12px;line-height:1.45}input[type=file]{display:none}.auth{padding:28px 20px;overflow:auto}.auth .card{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.danger{color:var(--bad)!important}.muted{color:var(--mut)}.configCard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:0 16px 12px}.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0}.switch input{width:42px;height:24px}.empty{padding:26px;text-align:center;color:var(--mut);font-family:'DM Mono',monospace;font-size:12px}.miniBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.scanTips{padding:0 16px 16px;color:var(--mut);font-size:12px;line-height:1.5}.scanTips b{color:var(--txt)}
+:root{
+  --bg:#07070d;--s:#0f0f1a;--s2:#17172a;--s3:#20203a;--b:#ffffff14;
+  --acc:#6c63ff;--acc2:#ff6584;--green:#00e5a0;--red:#ff4d6d;--yellow:#ffd166;
+  --text:#f2f2ff;--muted:#8585aa;--r:16px;
+  --fh:'Syne',sans-serif;--fm:'DM Mono',monospace;--fb:'Inter',sans-serif
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb);overflow:hidden}
+button,input,select,textarea{font-family:inherit}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+.page{display:none;flex-direction:column;height:100%;padding-bottom:84px;overflow-y:auto}
+.page.active{display:flex}
+.ph{padding:48px 18px 14px;flex-shrink:0}
+.pt{font-family:var(--fh);font-size:24px;font-weight:800}
+.ps{color:var(--muted);font-size:12px;font-family:var(--fm);margin-top:2px}
+.ph-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.btn{border:0;border-radius:12px;padding:14px 16px;font-weight:800;font-family:var(--fh);cursor:pointer;background:linear-gradient(135deg,var(--acc),#8b5cf6);color:#fff}
+.btn:active{transform:scale(.98)}
+.btn.secondary{background:var(--s2);border:1px solid var(--b);color:var(--text)}
+.btn.green{background:var(--green);color:#001b13}
+.btn.red{background:var(--red);color:#fff}
+.btn.yellow{background:var(--yellow);color:#1f1600}
+.btn.small{padding:10px 12px;font-size:13px;border-radius:10px}
+.inp,.sel,.txt{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px;color:var(--text);font-size:14px;outline:none;width:100%}
+.inp:focus,.sel:focus,.txt:focus{border-color:var(--acc)}
+.lbl{font-size:11px;font-family:var(--fm);color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.row{display:flex;gap:10px;align-items:center}
+.row>*{flex:1}
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:14px;margin:0 16px 12px}
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.logo-icon{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:23px}
+.logo-name{font-family:var(--fh);font-size:23px;font-weight:800}
+#sc-auth{padding:40px 24px;overflow-y:auto}
+.auth-title{font-family:var(--fh);font-size:28px;font-weight:800;margin-bottom:4px}
+.auth-sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+.notice{background:#ffd16612;border:1px solid #ffd16638;border-radius:12px;padding:12px;font-size:12px;line-height:1.5;color:var(--yellow);margin-bottom:14px}
+.form{display:flex;flex-direction:column;gap:12px}
+.legal{font-size:11px;color:var(--muted);text-align:center;line-height:1.6;margin-top:10px}
+
+/* nav */
+.nav{position:absolute;bottom:0;left:0;right:0;background:var(--s);border-top:1px solid var(--b);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:90}
+.ni{flex:1;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--muted);font-size:11px;font-family:var(--fm)}
+.ni.active{color:var(--acc)}
+.ni-ic{font-size:21px;line-height:1}
+.nav-scan{flex:1;display:flex;align-items:center;justify-content:center}
+.scan-fab{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:25px;margin-top:-18px;box-shadow:0 8px 30px #6c63ff60;cursor:pointer}
+
+/* dashboard */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px}
+.kpi{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:14px;position:relative;overflow:hidden}
+.kpi:before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--acc))}
+.kpi-l{font-size:11px;font-family:var(--fm);color:var(--muted);text-transform:uppercase}
+.kpi-v{font-family:var(--fh);font-size:27px;font-weight:800;margin-top:4px}
+.kpi-s{font-size:11px;color:var(--muted);font-family:var(--fm)}
+.sec{font-family:var(--fh);font-size:15px;font-weight:800;padding:0 16px;margin:4px 0 8px}
+.tlist{padding:0 16px;display:flex;flex-direction:column;gap:8px}
+.tc{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:12px;display:flex;gap:10px;align-items:center}
+.tt{width:54px;height:38px;border-radius:8px;background:var(--s2);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px;flex-shrink:0}
+.tt img{width:100%;height:100%;object-fit:cover}
+.ti{flex:1;min-width:0}
+.tn{font-family:var(--fh);font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm{font-size:11px;color:var(--muted);font-family:var(--fm);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdg{font-size:11px;font-family:var(--fm);padding:4px 9px;border-radius:99px;white-space:nowrap}
+.bp{background:#00e5a020;color:var(--green)}
+.bn{background:#ff4d6d20;color:var(--red)}
+.bu{background:#ffd16620;color:var(--yellow)}
+.bq{background:#6c63ff22;color:#bdb8ff}
+
+/* scan */
+#pg-scan{background:#000;padding-bottom:0}
+.cam-wrap{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#cam-video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.cam-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;background:linear-gradient(#0004,#0000 25%,#0000 75%,#0008)}
+.cam-frame{width:min(88vw,390px);height:min(58vw,255px);position:relative;border:1px solid #ffffff20;border-radius:10px}
+.cam-frame:before,.cam-frame:after,.cf-bl,.cf-br{content:'';position:absolute;width:30px;height:30px;border-color:#fff;border-style:solid}
+.cam-frame:before{top:-1px;left:-1px;border-width:4px 0 0 4px;border-radius:8px 0 0 0}
+.cam-frame:after{top:-1px;right:-1px;border-width:4px 4px 0 0;border-radius:0 8px 0 0}
+.cf-bl{bottom:-1px;left:-1px;border-width:0 0 4px 4px;border-radius:0 0 0 8px}
+.cf-br{bottom:-1px;right:-1px;border-width:0 4px 4px 0;border-radius:0 0 8px 0}
+.cam-line{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--acc),transparent);animation:scanLine 2s ease-in-out infinite}
+@keyframes scanLine{0%{top:0}50%{top:100%}100%{top:0}}
+.cam-hint{margin-top:14px;color:#ffffffdd;font-family:var(--fm);font-size:12px;text-align:center;padding:0 20px}
+.scan-bar{background:var(--s);padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.capture-row{display:grid;grid-template-columns:1fr 78px 1fr;gap:10px;align-items:center}
+.cap-btn{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:linear-gradient(135deg,var(--acc),var(--acc2));font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px #6c63ff55;z-index:10}
+.upload-btn,.rules-btn{background:var(--s2);border:1px solid var(--b);color:var(--text);border-radius:12px;padding:12px 10px;font-size:12px;font-weight:800;cursor:pointer;z-index:9999;position:relative}
+.upload-btn:active,.rules-btn:active{transform:scale(.98)}
+input[type=file]{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* filters/settings */
+.filter-bar{display:flex;gap:7px;padding:0 16px 12px;overflow-x:auto}
+.filter-bar::-webkit-scrollbar{display:none}
+.fc{flex-shrink:0;background:var(--s);border:1px solid var(--b);border-radius:99px;padding:7px 13px;color:var(--muted);font-size:12px;font-family:var(--fm);cursor:pointer}
+.fc.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.rule-card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:12px;margin:0 16px 10px}
+.rule-title{font-family:var(--fh);font-size:15px;font-weight:800}
+.rule-meta{font-family:var(--fm);font-size:11px;color:var(--muted);margin-top:2px}
+.rule-actions{display:flex;gap:8px;margin-top:10px}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:#000000cc;display:none;align-items:flex-end;z-index:200;backdrop-filter:blur(8px)}
+.overlay.open{display:flex}
+.sheet{width:100%;max-height:92vh;overflow-y:auto;background:var(--s);border-radius:24px 24px 0 0;padding:10px 18px calc(28px + env(safe-area-inset-bottom,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.handle{width:42px;height:4px;background:#ffffff25;border-radius:10px;margin:0 auto 18px}
+.rbadge{border-radius:var(--r);padding:18px;text-align:center;margin-bottom:14px}
+.rbadge.prize{background:#00e5a015;border:1px solid #00e5a045}
+.rbadge.nop{background:#ff4d6d15;border:1px solid #ff4d6d45}
+.rbadge.unc{background:#ffd16615;border:1px solid #ffd16645}
+.rbadge.prob{background:#6c63ff18;border:1px solid #6c63ff50}
+.rico{font-size:42px;margin-bottom:5px}
+.rtitle{font-family:var(--fh);font-size:20px;font-weight:800}
+.rval{font-family:var(--fm);font-size:30px;color:var(--green);margin-top:4px}
+.rconf{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5}
+.rwarn{background:#ffd16610;border:1px solid #ffd16630;border-radius:10px;padding:10px 12px;font-size:12px;color:var(--yellow);margin-bottom:12px;display:flex;gap:8px;line-height:1.5}
+.rimg{border-radius:12px;overflow:hidden;margin-bottom:12px;border:1px solid var(--b)}
+.rimg img{width:100%;display:block}
+.ralt{font-family:var(--fm);font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
+.ratxt{font-size:13px;line-height:1.55;white-space:pre-wrap;background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:12px;margin-bottom:12px}
+.ract{display:flex;gap:10px}
+.switch{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;font-family:var(--fm)}
+.switch input{width:18px;height:18px}
+#loading{position:fixed;inset:0;background:#000000c5;display:none;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:14px;backdrop-filter:blur(4px)}
+#loading.open{display:flex}
+.spinner{width:46px;height:46px;border:3px solid var(--s3);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ltxt{font-family:var(--fm);font-size:13px;color:var(--muted);text-align:center;padding:0 20px}
+#toast{position:fixed;bottom:94px;left:50%;transform:translateX(-50%);background:var(--s);border:1px solid var(--b);border-radius:12px;padding:11px 16px;font-size:13px;font-family:var(--fm);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1}
+.empty{text-align:center;color:var(--muted);font-family:var(--fm);font-size:13px;padding:24px}
 </style>
 </head>
 <body>
-<div id="auth" class="screen active auth">
-  <div class="brand"><div class="logo">🎰</div><div><h1>ScratchScan Pro</h1><div class="sub">v6 — extração primeiro, decisão depois</div></div></div>
-  <div class="card form">
-    <div class="fg"><label>Email / operador</label><input id="loginEmail" class="inp" placeholder="operador@posto.pt" value="operador@posto.pt"></div>
-    <div class="fg"><label>Posto</label><input id="loginPosto" class="inp" placeholder="Ex: Shell Águas Santas"></div>
-    <div class="fg"><label>Claude API Key</label><input id="apiKey" class="inp" type="password" placeholder="sk-ant-..."></div>
-    <button class="btn" onclick="login()">Entrar</button>
-    <div class="small">A chave fica apenas no browser/localStorage. Validação oficial deve ser sempre feita no terminal autorizado.</div>
+
+<div class="screen active" id="sc-auth">
+  <div class="logo-row"><div class="logo-icon">🎰</div><div class="logo-name">ScratchScan Pro</div></div>
+  <div class="auth-title">Validação assistida</div>
+  <div class="auth-sub">Raspadinhas — leitura rápida com confirmação manual</div>
+  <div class="notice">
+    ⚠️ Esta app é apenas uma ajuda operacional. A validação oficial deve ser feita no terminal/sistema autorizado.
+  </div>
+  <div class="form">
+    <div class="fg"><div class="lbl">Nome / Operador</div><input class="inp" id="login-name" placeholder="Ex: Nuno" autocomplete="name"></div>
+    <div class="fg"><div class="lbl">Posto</div><input class="inp" id="login-site" placeholder="Ex: Shell Águas Santas"></div>
+    <div class="fg"><div class="lbl">Claude API Key</div><input class="inp" type="password" id="login-key" placeholder="sk-ant-..."></div>
+    <button class="btn" id="btn-enter">Entrar →</button>
+    <div class="legal">A chave fica guardada apenas no localStorage deste dispositivo.</div>
   </div>
 </div>
 
-<div id="app" class="screen">
-  <div id="pg-home" class="page active">
-    <div class="top"><div class="brand"><div class="logo">🎰</div><div><h1>Hoje</h1><div class="sub" id="todayTxt"></div></div></div></div>
-    <div class="modebox"><b>Nova lógica v6:</b> a IA primeiro extrai números, símbolos e valores. Só depois a app decide. Se existir qualquer indício forte de prémio, nunca marca “sem prémio”.</div>
-    <div class="grid">
-      <div class="kpi"><div class="l">Total</div><div class="v" id="kTotal">0</div></div>
-      <div class="kpi"><div class="l">Prémios</div><div class="v" id="kPrize" style="color:var(--ok)">0</div></div>
-      <div class="kpi"><div class="l">Sem prémio</div><div class="v" id="kNo" style="color:var(--bad)">0</div></div>
-      <div class="kpi"><div class="l">A confirmar</div><div class="v" id="kCheck" style="color:var(--warn)">0</div></div>
+<div class="screen" id="sc-app">
+
+  <div class="page active" id="pg-dash">
+    <div class="ph"><div class="ph-row"><div><div class="pt">Hoje</div><div class="ps" id="d-date"></div></div><button class="btn small secondary" data-nav="profile">⚙️</button></div></div>
+    <div class="grid2">
+      <div class="kpi" style="--kc:var(--acc)"><div class="kpi-l">Total</div><div class="kpi-v" id="k-total">0</div><div class="kpi-s">leituras</div></div>
+      <div class="kpi" style="--kc:var(--green)"><div class="kpi-l">Prémios</div><div class="kpi-v" id="k-prize" style="color:var(--green)">0</div><div class="kpi-s" id="k-pct">0%</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-l">Sem Prémio</div><div class="kpi-v" id="k-no" style="color:var(--red)">0</div><div class="kpi-s">confiança alta</div></div>
+      <div class="kpi" style="--kc:var(--yellow)"><div class="kpi-l">Validar</div><div class="kpi-v" id="k-unc" style="color:var(--yellow)">0</div><div class="kpi-s">incertas/prováveis</div></div>
     </div>
-    <div class="section">Últimas leituras</div><div class="list" id="homeList"></div>
+    <div class="sec">Últimas leituras</div>
+    <div class="tlist" id="d-list"></div>
   </div>
 
-  <div id="pg-scan" class="page" style="padding-bottom:0;overflow:hidden">
-    <div class="cam">
-      <div class="viewer"><video id="video" autoplay playsinline muted></video><canvas id="canvas" style="display:none"></canvas><div class="frame"></div><div class="hint">Enquadrar só a zona raspada + topo do jogo</div></div>
-      <div class="bar">
-        <select id="gameSelect"></select>
-        <button class="round gal" onclick="document.getElementById('file').click()">🖼️</button>
-        <button class="round" onclick="captureCam()">📸</button>
+  <div class="page" id="pg-scan" style="padding-bottom:0">
+    <div class="cam-wrap">
+      <video id="cam-video" autoplay playsinline muted></video>
+      <canvas id="cam-canvas" style="display:none"></canvas>
+      <div class="cam-ov">
+        <div class="cam-frame"><div class="cf-bl"></div><div class="cf-br"></div><div class="cam-line"></div></div>
+        <div class="cam-hint">Enquadra a raspadinha. Boa luz, sem reflexos e com a zona raspada nítida.</div>
       </div>
     </div>
-    <input id="file" type="file" accept="image/*" onchange="onFile(event)">
+    <div class="scan-bar">
+      <div class="row">
+        <div class="fg">
+          <div class="lbl">Jogo / Tipo guardado</div>
+          <select class="sel" id="game-select"></select>
+        </div>
+        <div class="fg">
+          <div class="lbl">Modo</div>
+          <select class="sel" id="mode-select">
+            <option value="fast">Rápido</option>
+            <option value="strict">Rigoroso</option>
+          </select>
+        </div>
+      </div>
+      <label class="switch"><input type="checkbox" id="auto-save-game" checked> Guardar automaticamente jogo detetado</label>
+      <div class="capture-row">
+        <button class="upload-btn" id="upload-btn" type="button">🖼️ Carregar imagem</button>
+        <button class="cap-btn" id="capture-btn" type="button">📸</button>
+        <button class="rules-btn" id="new-rule-btn" type="button">➕ Guardar jogo</button>
+      </div>
+      <input type="file" id="file-input" accept="image/*" />
+    </div>
   </div>
 
-  <div id="pg-games" class="page">
-    <div class="top"><h1>Jogos guardados</h1><div class="sub">Regras locais para acelerar leituras futuras</div></div>
-    <div class="form">
-      <div class="fg"><label>Nome do jogo</label><input id="gName" class="inp" placeholder="Ex: 50X"></div>
-      <div class="fg"><label>Tipo de regra</label><select id="gType"><option value="numeros">Números da sorte / seus números</option><option value="simbolos">Símbolos iguais/especiais</option><option value="outro">Outro</option></select></div>
-      <div class="fg"><label>Regras resumidas</label><textarea id="gRules" placeholder="Ex: Se algum dos seus números coincidir com os números da sorte, ganha o valor indicado..."></textarea></div>
-      <button class="btn" onclick="saveGameRule()">Guardar jogo/regra</button>
+  <div class="page" id="pg-history">
+    <div class="ph"><div class="pt">Histórico</div><div class="ps">Leituras guardadas neste dispositivo</div></div>
+    <div class="filter-bar">
+      <div class="fc active" data-filter="all">Todas</div>
+      <div class="fc" data-filter="PRÉMIO">Prémio</div>
+      <div class="fc" data-filter="PRÉMIO_PROVÁVEL">Provável</div>
+      <div class="fc" data-filter="SEM_PRÉMIO">Sem prémio</div>
+      <div class="fc" data-filter="INCERTO">Incertas</div>
     </div>
-    <div class="section">Biblioteca local</div><div class="list" id="gamesList"></div>
+    <div class="tlist" id="h-list"></div>
   </div>
 
-  <div id="pg-history" class="page">
-    <div class="top"><h1>Histórico</h1><div class="sub">Registos locais deste equipamento</div></div>
-    <div class="pillrow"><button class="pill active" onclick="filterHist('all',this)">Todas</button><button class="pill" onclick="filterHist('PREMIO',this)">Prémio</button><button class="pill" onclick="filterHist('SEM_PREMIO',this)">Sem prémio</button><button class="pill" onclick="filterHist('CONFIRMAR',this)">Confirmar</button></div>
-    <div class="list" id="histList"></div>
+  <div class="page" id="pg-games">
+    <div class="ph"><div class="ph-row"><div><div class="pt">Jogos guardados</div><div class="ps">Regras locais para acelerar leituras futuras</div></div><button class="btn small" id="add-game-top">➕</button></div></div>
+    <div id="rules-list"></div>
   </div>
 
-  <div id="pg-settings" class="page">
-    <div class="top"><h1>Configuração</h1><div class="sub">Velocidade e rigor</div></div>
-    <div class="configCard">
-      <div class="switch"><div><b>Modo rápido</b><div class="small">1 chamada à IA. Segunda validação só se houver prémio/baixa confiança.</div></div><input id="fastMode" type="checkbox" checked></div>
-      <div class="switch"><div><b>Confirmar prémios</b><div class="small">Se detetar prémio, faz segunda chamada para confirmar.</div></div><input id="confirmPrize" type="checkbox" checked></div>
-      <div class="switch"><div><b>Sem prémio só com alta confiança</b><div class="small">Evita falsos negativos.</div></div><input id="safeNoPrize" type="checkbox" checked></div>
+  <div class="page" id="pg-reports">
+    <div class="ph"><div class="pt">Relatórios</div><div class="ps">Exportação e auditoria</div></div>
+    <div class="grid2">
+      <div class="kpi" style="--kc:var(--acc)"><div class="kpi-l">Total hoje</div><div class="kpi-v" id="r-total">0</div></div>
+      <div class="kpi" style="--kc:var(--green)"><div class="kpi-l">Prémios</div><div class="kpi-v" id="r-prize" style="color:var(--green)">0</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-l">Sem prémio</div><div class="kpi-v" id="r-no" style="color:var(--red)">0</div></div>
+      <div class="kpi" style="--kc:var(--yellow)"><div class="kpi-l">Validar</div><div class="kpi-v" id="r-unc" style="color:var(--yellow)">0</div></div>
     </div>
-    <div class="form">
-      <div class="fg"><label>API Key</label><input id="apiKey2" class="inp" type="password"></div><button class="btn" onclick="saveSettings()">Guardar configuração</button><button class="btn secondary" onclick="exportCSV()">Exportar CSV</button><button class="btn bad" onclick="clearAll()">Limpar histórico</button>
+    <div class="card">
+      <button class="btn secondary" id="export-csv" style="width:100%;margin-bottom:10px">⬇️ Exportar CSV</button>
+      <button class="btn secondary" id="export-html" style="width:100%">📄 Exportar relatório HTML</button>
     </div>
-    <div class="scanTips"><b>Dica de leitura:</b> tirar foto perto, sem reflexos, com a área raspada totalmente visível. Em raspadinhas 50X, garantir que aparecem os “números da sorte”, “seus números” e os valores por baixo.</div>
+  </div>
+
+  <div class="page" id="pg-profile">
+    <div class="ph"><div class="pt">Perfil</div><div class="ps">Configurações locais</div></div>
+    <div class="card">
+      <div class="row">
+        <div class="fg"><div class="lbl">Operador</div><input class="inp" id="p-name"></div>
+        <div class="fg"><div class="lbl">Posto</div><input class="inp" id="p-site"></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="fg"><div class="lbl">Claude API Key</div><input class="inp" type="password" id="p-key" placeholder="sk-ant-..."></div>
+      <div style="height:10px"></div>
+      <button class="btn" id="save-profile" style="width:100%">Guardar perfil</button>
+    </div>
+    <div class="card">
+      <button class="btn red" id="clear-data" style="width:100%;margin-bottom:10px">Apagar histórico</button>
+      <button class="btn secondary" id="logout" style="width:100%">Terminar sessão</button>
+    </div>
   </div>
 
   <div class="nav">
-    <button id="n-home" class="active" onclick="nav('home')"><b>🏠</b>Início</button>
-    <button id="n-history" onclick="nav('history')"><b>📋</b>Histórico</button>
-    <button onclick="nav('scan')"><span class="fab">📷</span></button>
-    <button id="n-games" onclick="nav('games')"><b>🎮</b>Jogos</button>
-    <button id="n-settings" onclick="nav('settings')"><b>⚙️</b>Def.</button>
+    <div class="ni active" id="ni-dash" data-nav="dash"><div class="ni-ic">🏠</div><div>Início</div></div>
+    <div class="ni" id="ni-history" data-nav="history"><div class="ni-ic">📋</div><div>Histórico</div></div>
+    <div class="nav-scan"><div class="scan-fab" data-nav="scan">📷</div></div>
+    <div class="ni" id="ni-games" data-nav="games"><div class="ni-ic">🎮</div><div>Jogos</div></div>
+    <div class="ni" id="ni-reports" data-nav="reports"><div class="ni-ic">📊</div><div>Relatório</div></div>
   </div>
 </div>
 
-<div id="modal" class="overlay"><div class="sheet"><div class="handle"></div><div id="rBox" class="resultBox warn"><div class="ico" id="rIco">🔍</div><h2 id="rTitle">A analisar...</h2><div class="value" id="rValue"></div><div class="small" id="rMeta"></div></div><div class="warnLine">⚠️ Apoio à decisão. O pagamento/validação oficial deve ser confirmado no terminal SCML.</div><div class="photo"><img id="rImg"></div><div class="section" style="padding-left:0">Extração e decisão</div><div class="analysis" id="rText">A processar...</div><div class="form" style="padding:12px 0 0"><div class="row"><div class="fg"><label>Valor confirmado €</label><input class="inp" id="manualValue" type="number" step="0.01"></div><div class="fg"><label>Lote/Série</label><input class="inp" id="manualLot"></div></div><div class="fg"><label>Notas</label><input class="inp" id="manualNotes" placeholder="Ex: validado no terminal"></div><div class="miniBtns"><button class="btn ok" onclick="forceResult('PREMIO')">Marcar prémio</button><button class="btn bad" onclick="forceResult('SEM_PREMIO')">Marcar sem prémio</button></div><button class="btn" id="saveBtn" onclick="saveRead()">Guardar leitura</button><button class="btn secondary" onclick="closeModal()">Descartar</button></div></div></div>
-<div id="loading" class="loading"><div class="spin"></div><div id="loadingTxt" class="mono small">A analisar...</div></div><div id="toast" class="toast"></div>
+<div class="overlay" id="modal-result">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="rbadge unc" id="result-badge">
+      <div class="rico" id="result-ico">🔍</div>
+      <div class="rtitle" id="result-title">A analisar...</div>
+      <div class="rval" id="result-val"></div>
+      <div class="rconf" id="result-conf"></div>
+    </div>
+    <div class="rwarn"><span>⚠️</span><span><b>Obrigatório:</b> validar oficialmente no terminal/sistema autorizado antes de pagar qualquer prémio.</span></div>
+    <div class="rimg"><img id="result-img" alt="Imagem analisada"></div>
+    <div class="ralt">Análise</div>
+    <div class="ratxt" id="result-text">A processar...</div>
+    <div class="row" style="margin-bottom:10px">
+      <div class="fg"><div class="lbl">Valor confirmado (€)</div><input class="inp" type="number" id="manual-value" step="0.01" placeholder="0.00"></div>
+      <div class="fg"><div class="lbl">Lote / Série</div><input class="inp" id="manual-lot" placeholder="Opcional"></div>
+    </div>
+    <div class="fg" style="margin-bottom:12px"><div class="lbl">Notas</div><input class="inp" id="manual-notes" placeholder="Observações..."></div>
+    <div class="ract">
+      <button class="btn secondary" id="discard-result" style="flex:1">Descartar</button>
+      <button class="btn green" id="save-result" style="flex:1">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-rule">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="rtitle" style="margin-bottom:12px">Guardar tipo de raspadinha</div>
+    <div class="form">
+      <div class="fg"><div class="lbl">Nome do jogo</div><input class="inp" id="rule-name" placeholder="Ex: 50X"></div>
+      <div class="row">
+        <div class="fg"><div class="lbl">Preço (€)</div><input class="inp" type="number" id="rule-price" step="0.5" placeholder="5"></div>
+        <div class="fg"><div class="lbl">Tipo</div><select class="sel" id="rule-type"><option value="NUMEROS">Números</option><option value="SIMBOLOS">Símbolos</option><option value="OUTRO">Outro</option></select></div>
+      </div>
+      <div class="fg"><div class="lbl">Regras / Como ganha</div><textarea class="txt" id="rule-text" rows="5" placeholder="Ex: Se algum dos seus números coincidir com um número da sorte, ganha o valor correspondente..."></textarea></div>
+      <div class="fg"><div class="lbl">Símbolos especiais</div><textarea class="txt" id="rule-symbols" rows="3" placeholder="Ex: 50X multiplica por 50; estrela..."></textarea></div>
+      <div class="ract">
+        <button class="btn secondary" id="close-rule" style="flex:1">Cancelar</button>
+        <button class="btn green" id="save-rule" style="flex:1">Guardar jogo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="loading"><div class="spinner"></div><div class="ltxt" id="loading-text">A processar...</div></div>
+<div id="toast"></div>
+
 <script>
-let user=null, stream=null, current=null, hist=[], rules=[];
-const $=id=>document.getElementById(id);
-const baseRules=[
- {name:'50X',type:'numeros',rules:'Jogo de números. Comparar os NÚMEROS DA SORTE com OS SEUS NÚMEROS. Se algum número coincidir, ganha o prémio indicado por baixo desse número. Se aparecer multiplicador/símbolo especial, aplicar a regra impressa.'},
- {name:'Raspa Ouro',type:'simbolos',rules:'Aplicar a regra impressa. Procurar símbolos iguais, símbolos especiais e valores claramente associados.'},
- {name:'Raspadinha SCML',type:'outro',rules:'Ler primeiro o nome do jogo e as regras visíveis. Extrair todos os números/símbolos/valores antes de decidir.'}
+'use strict';
+
+/* =========================
+   STATE
+========================= */
+let state = {
+  user: null,
+  tickets: [],
+  rules: [],
+  camStream: null,
+  currentCapture: null,
+  currentResult: null,
+  currentFilter: 'all'
+};
+
+const LS = {
+  user:'scratchscan_user_v7',
+  tickets:'scratchscan_tickets_v7',
+  rules:'scratchscan_rules_v7'
+};
+
+const DEFAULT_RULES = [
+  {
+    id:'default-50x',
+    name:'50X',
+    price:5,
+    type:'NUMEROS',
+    text:'Comparar os números/símbolos da área de jogo com as regras impressas. Se existir correspondência premiada, ler apenas o valor claramente associado.',
+    symbols:'Aplicar multiplicadores apenas se estiverem claramente visíveis e associados a prémio.'
+  },
+  {
+    id:'default-scml',
+    name:'Raspadinha SCML — Geral',
+    price:null,
+    type:'OUTRO',
+    text:'Ler as instruções impressas. Não inventar prémios nem valores. Se o valor não estiver legível, marcar como prémio provável ou incerto.',
+    symbols:'Usar símbolos especiais apenas quando claramente identificados.'
+  }
 ];
-function load(){hist=JSON.parse(localStorage.getItem('ss_hist_v6')||'[]');rules=JSON.parse(localStorage.getItem('ss_rules_v6')||'null')||baseRules;renderGames();renderSelect();updateDash();$('todayTxt').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});$('apiKey2').value=localStorage.getItem('ss_key')||'';}
-function saveLocal(){localStorage.setItem('ss_hist_v6',JSON.stringify(hist.slice(0,800)));localStorage.setItem('ss_rules_v6',JSON.stringify(rules));}
-function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2400)}
-function loading(t,on=true){$('loadingTxt').textContent=t||'A analisar...';$('loading').classList.toggle('open',on)}
-function login(){const key=$('apiKey').value.trim()||localStorage.getItem('ss_key')||'';if(!key){toast('Introduz a API key');return}localStorage.setItem('ss_key',key);user={email:$('loginEmail').value,posto:$('loginPosto').value};localStorage.setItem('ss_user_v6',JSON.stringify(user));$('auth').classList.remove('active');$('app').classList.add('active');load()}
-function saveSettings(){const k=$('apiKey2').value.trim();if(k)localStorage.setItem('ss_key',k);toast('Configuração guardada')}
-function nav(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('pg-'+p).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if($('n-'+p))$('n-'+p).classList.add('active');if(p==='scan')startCam();else stopCam();if(p==='history')renderHist('all');if(p==='games')renderGames();}
-async function startCam(){if(stream)return;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});$('video').srcObject=stream}catch(e){toast('Câmara indisponível. Usa galeria.')}}
-function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null}}
-function captureCam(){const v=$('video');if(!stream||!v.videoWidth){toast('Câmara ainda não pronta');return}const c=$('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);prepareImage(c.toDataURL('image/jpeg',0.96))}
-function onFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>prepareImage(ev.target.result);r.readAsDataURL(f);e.target.value=''}
-function prepareImage(src){const img=new Image();img.onload=()=>{const max= $('fastMode').checked?1350:1850;let w=img.width,h=img.height;if(w>max||h>max){const rr=Math.min(max/w,max/h);w=Math.round(w*rr);h=Math.round(h*rr)}const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);const data=c.toDataURL('image/jpeg',0.92);openModal(data);analyze(data)};img.src=src}
-function selectedRule(){const n=$('gameSelect').value;return rules.find(r=>r.name===n)||rules[0]}
-function renderSelect(){const sel=$('gameSelect');sel.innerHTML=rules.map(r=>`<option value="${esc(r.name)}">${esc(r.name)}</option>`).join('')}
-function saveGameRule(){const name=$('gName').value.trim();if(!name){toast('Indica o nome do jogo');return}const obj={name,type:$('gType').value,rules:$('gRules').value.trim()||'Aplicar as regras impressas. Extrair primeiro números, símbolos e valores.'};const i=rules.findIndex(r=>r.name.toLowerCase()===name.toLowerCase());if(i>=0)rules[i]=obj;else rules.unshift(obj);saveLocal();renderGames();renderSelect();toast('Jogo guardado')}
-function renderGames(){const el=$('gamesList');if(!el)return;if(!rules.length){el.innerHTML='<div class="empty">Sem jogos guardados.</div>';return}el.innerHTML=rules.map((r,i)=>`<div class="item"><div class="thumb">🎮</div><div class="itxt"><b>${esc(r.name)}</b><p>${esc(r.type)} · ${esc((r.rules||'').slice(0,80))}</p></div><button class="pill" onclick="editGame(${i})">Editar</button></div>`).join('')}
-function editGame(i){const r=rules[i];$('gName').value=r.name;$('gType').value=r.type;$('gRules').value=r.rules;toast('Jogo carregado para edição')}
-function openModal(img){current={id:Date.now().toString(),ts:new Date().toISOString(),img,result:'CONFIRMAR',confidence:0,value:null,details:'',game:selectedRule().name,lot:'',notes:''};$('rImg').src=img;$('manualValue').value='';$('manualLot').value='';$('manualNotes').value='';setResultUI('CONFIRMAR',0,null,'A analisar...');$('rText').textContent='A processar extração visual...';$('modal').classList.add('open')}
-function closeModal(){$('modal').classList.remove('open');current=null}
-function setResultUI(res,conf,val,reason){const box=$('rBox');box.className='resultBox '+(res==='PREMIO'?'ok':res==='SEM_PREMIO'?'bad':'warn');$('rIco').textContent=res==='PREMIO'?'🎉':res==='SEM_PREMIO'?'❌':'🔍';$('rTitle').textContent=res==='PREMIO'?'Prémio detetado/provável':res==='SEM_PREMIO'?'Sem prémio provável':'A confirmar';$('rValue').textContent=res==='PREMIO'?(val?val+'€':'Valor a confirmar'):'';$('rMeta').textContent=`Confiança: ${conf||0}% — ${reason||''}`}
-async function callClaude(prompt,img){const key=localStorage.getItem('ss_key');if(!key)throw new Error('API key não configurada');const base64=img.split(',')[1], mime=img.split(';')[0].split(':')[1]||'image/jpeg';const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1600,temperature:0,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:prompt}]}]})});const d=await r.json();if(d.error)throw new Error(d.error.message||'Erro API');const raw=d.content?.[0]?.text||'{}';const m=raw.match(/\{[\s\S]*\}/);return JSON.parse(m?m[0]:raw)}
-function promptExtract(rule,confirm=false){return `És um leitor visual forense de raspadinhas portuguesas. Tarefa principal: EXTRair informação visível; não sejas conservador ao extrair.\n\nJogo selecionado/esperado: ${rule.name}\nRegras locais conhecidas: ${rule.rules}\n\nIMPORTANTE:\n- Não respondas simplesmente "sem prémio" sem listar o que viste.\n- Primeiro lê TODOS os números/símbolos/valores visíveis.\n- Se vires uma correspondência número-sorte vs número-jogado, marca indicio_premio=true.\n- Se vires um símbolo especial ou combinação vencedora, marca indicio_premio=true.\n- Se houver indício de prémio mas o valor não estiver claro, resultado_sugerido deve ser PREMIO, valor_total=null e requer_confirmacao=true.\n- Só sugere SEM_PREMIO se conseguires ver claramente as zonas relevantes e não existir nenhuma correspondência/símbolo vencedor.\n- Se estiver parcialmente tapado, mas houver uma correspondência visível com valor, sugere PREMIO.\n- Não inventes valores.\n\n${confirm?'Esta é uma segunda leitura de confirmação. Procura especificamente indícios de prémio e valores legíveis.':''}\n\nResponde APENAS em JSON válido:\n{\n "nome_jogo_lido":"texto ou null",\n "qualidade_imagem":"alta|media|baixa",\n "tipo_jogo":"numeros|simbolos|outro",\n "numeros_sorte":["..."],\n "seus_numeros":[{"numero":"...","valor":"... ou null","match":true/false}],\n "simbolos":[{"local":"...","simbolo":"...","valor":"... ou null","vencedor":true/false}],\n "indicio_premio":true/false,\n "valor_total":numero ou null,\n "resultado_sugerido":"PREMIO|SEM_PREMIO|CONFIRMAR",\n "confianca":0-100,\n "razao":"frase curta",\n "detalhes":"explicação curta com o que foi visto"\n}`}
-async function analyze(img){try{loading('Leitura rápida: a extrair números/símbolos...');const rule=selectedRule();const a1=await callClaude(promptExtract(rule,false),img);let a2=null;const prelim=decide([a1]);const needConfirm=(!$('fastMode').checked)||($('confirmPrize').checked&&(prelim.result==='PREMIO'||prelim.result==='CONFIRMAR'||prelim.confidence<80));if(needConfirm){loading('A confirmar indícios de prémio...');a2=await callClaude(promptExtract(rule,true),img)}loading('',false);const decision=decide(a2?[a1,a2]:[a1]);applyDecision(decision,[a1,a2].filter(Boolean),rule)}catch(e){loading('',false);if(current){current.result='CONFIRMAR';current.confidence=0;current.details='Erro: '+e.message;setResultUI('CONFIRMAR',0,null,'Erro de análise');$('rText').textContent=current.details}}}
-function nval(v){if(v===null||v===undefined||v==='')return null;let s=String(v).replace(',','.').replace(/[€\s]/g,'');let n=parseFloat(s);return isNaN(n)?null:n}
-function decide(arr){let anyPrize=false, prizeConf=0, values=[], anyConfirm=false, noOk=true, texts=[];for(const a of arr){texts.push(`${a.resultado_sugerido} ${a.confianca}% — ${a.razao||''}`);if(a.indicio_premio||a.resultado_sugerido==='PREMIO'||(a.seus_numeros||[]).some(x=>x.match)||(a.simbolos||[]).some(x=>x.vencedor)){anyPrize=true;prizeConf=Math.max(prizeConf,Number(a.confianca)||60)}const vt=nval(a.valor_total);if(vt!==null&&vt>0)values.push(vt);if(a.resultado_sugerido==='CONFIRMAR'||a.qualidade_imagem==='baixa'||(Number(a.confianca)||0)<75)anyConfirm=true;if(a.resultado_sugerido!=='SEM_PREMIO'||(Number(a.confianca)||0)<88)noOk=false}
- if(anyPrize){return{result:'PREMIO',confidence:Math.max(prizeConf, values.length?85:72),value:values.length?Math.max(...values):null,reason:values.length?'Foi detetado prémio com valor legível.':'Há indício visual de prémio; valor a confirmar.',confirm:!values.length}}
- if(noOk&&$('safeNoPrize').checked){return{result:'SEM_PREMIO',confidence:Math.max(...arr.map(a=>Number(a.confianca)||0)),value:null,reason:'Não foram encontrados indícios de prémio nas zonas visíveis.',confirm:false}}
- if(!$('safeNoPrize').checked&&arr.every(a=>a.resultado_sugerido==='SEM_PREMIO')){return{result:'SEM_PREMIO',confidence:Math.max(...arr.map(a=>Number(a.confianca)||0)),value:null,reason:'Leitura indica sem prémio.',confirm:false}}
- return{result:'CONFIRMAR',confidence:Math.min(...arr.map(a=>Number(a.confianca)||50)),value:null,reason:'Leitura insuficiente ou sem consenso seguro.',confirm:true}}
-function applyDecision(dec,analyses,rule){current.game=(analyses[0].nome_jogo_lido||rule.name||'Raspadinha'); if(current.game&&!rules.some(r=>r.name.toLowerCase()===current.game.toLowerCase())){rules.unshift({name:current.game,type:analyses[0].tipo_jogo||'outro',rules:'Jogo detetado automaticamente. Completar regras manualmente.'});saveLocal();renderSelect()}
-current.result=dec.result;current.confidence=dec.confidence;current.value=dec.value;current.details=formatAnalysis(analyses,dec);setResultUI(dec.result,dec.confidence,dec.value,dec.reason);$('rText').textContent=current.details;if(dec.value)$('manualValue').value=dec.value}
-function formatAnalysis(arr,dec){return arr.map((a,i)=>`ANÁLISE ${i+1}\nJogo lido: ${a.nome_jogo_lido||'n/d'}\nQualidade: ${a.qualidade_imagem}\nResultado sugerido: ${a.resultado_sugerido} | ${a.confianca}% | valor ${a.valor_total??'n/d'}€\nIndício prémio: ${a.indicio_premio?'SIM':'NÃO'}\nNúmeros da sorte: ${(a.numeros_sorte||[]).join(', ')||'n/d'}\nSeus números: ${(a.seus_numeros||[]).map(x=>`${x.numero}${x.match?'✅':''}${x.valor?'='+x.valor+'€':''}`).join(' | ')||'n/d'}\nSímbolos: ${(a.simbolos||[]).map(x=>`${x.simbolo}${x.vencedor?'✅':''}${x.valor?'='+x.valor+'€':''}`).join(' | ')||'n/d'}\nResumo: ${a.detalhes||a.razao||''}`).join('\n\n')+`\n\nDECISÃO FINAL DA APP\n${dec.result} | confiança ${dec.confidence}% | valor ${dec.value??'a confirmar'}€\n${dec.reason}`}
-function forceResult(r){if(!current)return;current.result=r;current.confidence=100;if(r==='PREMIO'){let v=nval($('manualValue').value);current.value=v;setResultUI('PREMIO',100,v,'Resultado confirmado manualmente')}else{current.value=null;setResultUI('SEM_PREMIO',100,null,'Resultado confirmado manualmente')}toast('Resultado ajustado manualmente')}
-function saveRead(){if(!current)return;current.value=nval($('manualValue').value)??current.value;current.lot=$('manualLot').value;current.notes=$('manualNotes').value;hist.unshift(current);saveLocal();closeModal();updateDash();toast('Leitura guardada')}
-function card(t){const b=t.result==='PREMIO'?'b-ok':t.result==='SEM_PREMIO'?'b-bad':'b-warn';const label=t.result==='PREMIO'?`🎉 ${t.value?t.value+'€':'Prémio'}`:t.result==='SEM_PREMIO'?'❌ Sem prémio':'🔍 Confirmar';return `<div class="item"><div class="thumb">${t.img?`<img src="${t.img}">`:'🎰'}</div><div class="itxt"><b>${esc(t.game||'Raspadinha')}</b><p>${new Date(t.ts).toLocaleString('pt-PT')} · ${t.confidence}% ${t.lot?'· '+esc(t.lot):''}</p></div><span class="badge ${b}">${label}</span></div>`}
-function updateDash(){const today=new Date().toDateString();const td=hist.filter(t=>new Date(t.ts).toDateString()===today);$('kTotal').textContent=td.length;$('kPrize').textContent=td.filter(t=>t.result==='PREMIO').length;$('kNo').textContent=td.filter(t=>t.result==='SEM_PREMIO').length;$('kCheck').textContent=td.filter(t=>t.result==='CONFIRMAR').length;$('homeList').innerHTML=td.length?td.slice(0,8).map(card).join(''):'<div class="empty">Sem leituras hoje.</div>'}
-function renderHist(f='all'){const list=f==='all'?hist:hist.filter(t=>t.result===f);$('histList').innerHTML=list.length?list.map(card).join(''):'<div class="empty">Sem registos.</div>'}
-function filterHist(f,el){document.querySelectorAll('.pillrow .pill').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderHist(f)}
-function exportCSV(){const rows=[['data','posto','jogo','resultado','confianca','valor','lote','notas']].concat(hist.map(t=>[new Date(t.ts).toLocaleString('pt-PT'),user?.posto||'',t.game,t.result,t.confidence,t.value??'',t.lot||'',t.notes||'']));const csv=rows.map(r=>r.map(c=>'"'+String(c).replaceAll('"','""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download='scratchscan_v6_'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
-function clearAll(){if(confirm('Limpar histórico local?')){hist=[];saveLocal();updateDash();renderHist();toast('Histórico limpo')}}
-function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
-document.addEventListener('DOMContentLoaded',()=>{const saved=localStorage.getItem('ss_user_v6');if(saved&&localStorage.getItem('ss_key')){user=JSON.parse(saved);$('auth').classList.remove('active');$('app').classList.add('active');load()}else load()});
+
+/* =========================
+   HELPERS
+========================= */
+const $ = id => document.getElementById(id);
+
+function toast(msg){
+  const el=$('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(window.__toast);
+  window.__toast=setTimeout(()=>el.classList.remove('show'),2800);
+}
+function showLoading(msg){
+  $('loading-text').textContent = msg || 'A processar...';
+  $('loading').classList.add('open');
+}
+function hideLoading(){ $('loading').classList.remove('open'); }
+
+function saveAll(){
+  localStorage.setItem(LS.user, JSON.stringify(state.user));
+  localStorage.setItem(LS.tickets, JSON.stringify(state.tickets.slice(0,1000)));
+  localStorage.setItem(LS.rules, JSON.stringify(state.rules));
+}
+function loadAll(){
+  try{ state.user=JSON.parse(localStorage.getItem(LS.user)||'null'); }catch(e){state.user=null}
+  try{ state.tickets=JSON.parse(localStorage.getItem(LS.tickets)||'[]'); }catch(e){state.tickets=[]}
+  try{ state.rules=JSON.parse(localStorage.getItem(LS.rules)||'null') || DEFAULT_RULES; }catch(e){state.rules=DEFAULT_RULES}
+  if(!Array.isArray(state.rules) || state.rules.length===0) state.rules=DEFAULT_RULES;
+}
+function fmtTime(ts){return new Date(ts).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});}
+function fmtDate(ts){return new Date(ts).toLocaleString('pt-PT');}
+function todayList(){
+  const today=new Date().toDateString();
+  return state.tickets.filter(t=>new Date(t.ts).toDateString()===today);
+}
+function normalizeResult(r){
+  const x = (r||'').toUpperCase().replace('PREMIO','PRÉMIO');
+  if(x.includes('PROV')) return 'PRÉMIO_PROVÁVEL';
+  if(x.includes('SEM')) return 'SEM_PRÉMIO';
+  if(x.includes('PRÉMIO')) return 'PRÉMIO';
+  return 'INCERTO';
+}
+function safeNum(v){
+  if(v===null || v===undefined || v==='') return null;
+  const n=Number(String(v).replace(',','.').replace(/[^\d.-]/g,''));
+  return Number.isFinite(n) ? n : null;
+}
+function getKey(){
+  return (state.user && state.user.key) || '';
+}
+
+/* =========================
+   NAV / INIT
+========================= */
+function showApp(){
+  $('sc-auth').classList.remove('active');
+  $('sc-app').classList.add('active');
+  $('d-date').textContent = new Date().toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});
+  fillProfile();
+  renderGameSelect();
+  updateDash();
+}
+function showAuth(){
+  $('sc-app').classList.remove('active');
+  $('sc-auth').classList.add('active');
+}
+function navTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=$('pg-'+page) || $('pg-dash');
+  pg.classList.add('active');
+  const ni=$('ni-'+page);
+  if(ni) ni.classList.add('active');
+
+  if(page==='scan') startCamera(); else stopCamera();
+  if(page==='history') renderHistory(state.currentFilter);
+  if(page==='games') renderRules();
+  if(page==='reports') updateReports();
+}
+
+/* =========================
+   AUTH
+========================= */
+function enterApp(){
+  const name=$('login-name').value.trim() || 'Operador';
+  const site=$('login-site').value.trim() || 'Posto';
+  const key=$('login-key').value.trim();
+  if(!key || key.length<20){ toast('⚠️ Introduz uma API Key válida'); return; }
+  state.user={name,site,key};
+  saveAll();
+  showApp();
+}
+function fillProfile(){
+  if(!state.user) return;
+  $('p-name').value=state.user.name||'';
+  $('p-site').value=state.user.site||'';
+  $('p-key').value=state.user.key||'';
+}
+function saveProfile(){
+  state.user = {
+    name:$('p-name').value.trim() || 'Operador',
+    site:$('p-site').value.trim() || 'Posto',
+    key:$('p-key').value.trim()
+  };
+  saveAll();
+  toast('✅ Perfil guardado');
+}
+
+/* =========================
+   CAMERA / UPLOAD
+========================= */
+async function startCamera(){
+  if(state.camStream) return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    toast('⚠️ Câmara não suportada. Usa Carregar imagem.');
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video:{
+        facingMode:{ideal:'environment'},
+        width:{ideal:1920},
+        height:{ideal:1080}
+      },
+      audio:false
+    });
+    state.camStream=stream;
+    $('cam-video').srcObject=stream;
+  }catch(e){
+    toast('⚠️ Câmara indisponível. Usa Carregar imagem.');
+  }
+}
+function stopCamera(){
+  if(state.camStream){
+    state.camStream.getTracks().forEach(t=>t.stop());
+    state.camStream=null;
+    $('cam-video').srcObject=null;
+  }
+}
+function capturePhoto(){
+  const v=$('cam-video'), c=$('cam-canvas');
+  if(!state.camStream || !v.videoWidth){
+    toast('⚠️ Câmara ainda não está pronta');
+    return;
+  }
+  c.width=v.videoWidth;
+  c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+  processImage(c.toDataURL('image/jpeg',0.95));
+}
+function triggerUpload(){
+  const input=$('file-input');
+  input.value='';
+  input.click();
+}
+function handleFile(e){
+  const file=e.target.files && e.target.files[0];
+  if(!file){ return; }
+  if(!file.type.startsWith('image/')){
+    toast('⚠️ Seleciona uma imagem');
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=ev=>processImage(ev.target.result);
+  reader.readAsDataURL(file);
+}
+
+/* Image processing: resize + light contrast/sharpen */
+function prepareImage(dataUrl, maxDim=1280){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      const ratio=Math.min(1, maxDim/Math.max(w,h));
+      w=Math.round(w*ratio); h=Math.round(h*ratio);
+
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,0,0,w,h);
+
+      // mild contrast and brightness correction
+      try{
+        const imageData=ctx.getImageData(0,0,w,h);
+        const d=imageData.data;
+        const contrast=1.12, brightness=6;
+        for(let i=0;i<d.length;i+=4){
+          d[i]=Math.max(0,Math.min(255,(d[i]-128)*contrast+128+brightness));
+          d[i+1]=Math.max(0,Math.min(255,(d[i+1]-128)*contrast+128+brightness));
+          d[i+2]=Math.max(0,Math.min(255,(d[i+2]-128)*contrast+128+brightness));
+        }
+        ctx.putImageData(imageData,0,0);
+      }catch(e){}
+
+      resolve(canvas.toDataURL('image/jpeg',0.88));
+    };
+    img.onerror=reject;
+    img.src=dataUrl;
+  });
+}
+
+async function processImage(dataUrl){
+  state.currentCapture = {
+    original:dataUrl,
+    ts:new Date().toISOString(),
+    mode:$('mode-select').value,
+    selectedRuleId:$('game-select').value
+  };
+  state.currentResult=null;
+
+  openResultModal(dataUrl);
+  await analyzeTicket(dataUrl);
+}
+
+/* =========================
+   PROMPTS / API
+========================= */
+function selectedRule(){
+  const id=$('game-select').value;
+  return state.rules.find(r=>r.id===id) || null;
+}
+function buildExtractionPrompt(rule, mode){
+  const ruleBlock = rule ? `
+JOGO SELECIONADO/GUARDADO:
+Nome: ${rule.name}
+Preço: ${rule.price || 'n/d'}
+Tipo: ${rule.type}
+Regras guardadas: ${rule.text || ''}
+Símbolos especiais guardados: ${rule.symbols || ''}
+` : 'SEM JOGO SELECIONADO. Identifica o jogo se for visível.';
+
+  return `
+És um analisador visual conservador de raspadinhas portuguesas.
+
+OBJETIVO:
+NÃO decidas logo "sem prémio" sem antes extrair o que vês.
+Primeiro extrai números, símbolos e valores visíveis. Depois indica se há indícios de prémio.
+
+${ruleBlock}
+
+INSTRUÇÕES IMPORTANTES:
+- Não inventes valores.
+- Se existir qualquer correspondência visível entre número/símbolo premiado e número/símbolo do jogador, marca "PRÉMIO" ou "PRÉMIO_PROVÁVEL".
+- "SEM_PREMIO" só deve ser usado se a imagem estiver legível e não houver correspondências nem símbolos premiados.
+- Se vires prémio mas o valor não estiver claro, usa "PRÉMIO_PROVÁVEL" e valor_estimado null.
+- Se uma parte estiver coberta, riscada, com reflexo ou fora de foco, não digas "sem prémio" com confiança alta.
+- Se o resultado for prémio, descreve exatamente a correspondência. Ex: "39 aparece nos números vencedores e também nos seus números; valor associado 5€".
+- Modo atual: ${mode === 'strict' ? 'RIGOROSO' : 'RÁPIDO'}.
+
+Responde APENAS com JSON válido:
+{
+  "nome_jogo":"nome visível ou null",
+  "qualidade_imagem":"alta|media|baixa",
+  "numeros_vencedores":["..."],
+  "numeros_jogador":["..."],
+  "simbolos_vistos":["..."],
+  "valores_visiveis":["..."],
+  "correspondencias":[{"tipo":"numero|simbolo","match":"39","valor":5,"certeza":0-100,"descricao":"..."}],
+  "resultado":"PREMIO|PREMIO_PROVAVEL|SEM_PREMIO|INCERTO",
+  "confianca":0-100,
+  "valor_estimado":numero ou null,
+  "razao":"frase curta",
+  "detalhes":"explicação curta e objetiva"
+}`;
+}
+
+function buildValidationPrompt(rule, first){
+  return `
+Faz uma segunda validação visual da mesma raspadinha.
+
+Resultado anterior:
+${JSON.stringify(first)}
+
+Tarefa:
+- Verifica se a correspondência indicada existe mesmo.
+- Se houver match visível com valor legível, confirma PRÉMIO.
+- Se o match existir mas o valor não estiver legível, devolve PRÉMIO_PROVÁVEL.
+- Só devolve SEM_PREMIO se conseguires negar claramente a existência de qualquer match.
+
+Regras guardadas:
+${rule ? JSON.stringify(rule) : 'sem regra guardada'}
+
+Responde APENAS com JSON:
+{
+  "resultado":"PREMIO|PREMIO_PROVAVEL|SEM_PREMIO|INCERTO",
+  "confianca":0-100,
+  "valor_estimado":numero ou null,
+  "confirmou_match":true ou false,
+  "razao":"frase curta",
+  "detalhes":"explicação da validação"
+}`;
+}
+
+async function callClaude(imgData, prompt, fast=true){
+  const key=getKey();
+  if(!key) throw new Error('API Key não configurada');
+  const prepared = await prepareImage(imgData, fast ? 1280 : 1600);
+  const base64=prepared.split(',')[1];
+  const mime=prepared.split(';')[0].split(':')[1] || 'image/jpeg';
+
+  const model = fast ? 'claude-3-5-haiku-latest' : 'claude-sonnet-4-5';
+  const body={
+    model,
+    max_tokens: fast ? 1200 : 1600,
+    messages:[{
+      role:'user',
+      content:[
+        {type:'image',source:{type:'base64',media_type:mime,data:base64}},
+        {type:'text',text:prompt}
+      ]
+    }]
+  };
+
+  const res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify(body)
+  });
+
+  const data=await res.json();
+  if(data.error){
+    throw new Error(data.error.message || 'Erro API');
+  }
+  const raw=(data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '{}';
+  return parseJSON(raw);
+}
+function parseJSON(raw){
+  try{
+    const match=raw.match(/\{[\s\S]*\}/);
+    return JSON.parse(match ? match[0] : raw);
+  }catch(e){
+    return {resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Resposta inválida da IA',detalhes:raw};
+  }
+}
+
+async function analyzeTicket(imgData){
+  const mode=$('mode-select').value;
+  const rule=selectedRule();
+  showLoading('A analisar imagem...');
+
+  try{
+    // 1) Extraction-first fast pass
+    const first = await callClaude(imgData, buildExtractionPrompt(rule, mode), true);
+    const decision1 = decideFinal(first, null);
+    let second=null;
+
+    const needsSecond =
+      mode === 'strict' ||
+      decision1.resultado === 'PRÉMIO' ||
+      decision1.resultado === 'PRÉMIO_PROVÁVEL' ||
+      decision1.resultado === 'INCERTO' ||
+      Number(first.confianca||0) < 82 ||
+      (first.correspondencias && first.correspondencias.length);
+
+    if(needsSecond){
+      showLoading('A confirmar resultado...');
+      second = await callClaude(imgData, buildValidationPrompt(rule, first), false);
+    }
+
+    const final = decideFinal(first, second);
+    final.raw1=first;
+    final.raw2=second;
+
+    // Auto-save game if detected
+    if($('auto-save-game').checked && first.nome_jogo && first.nome_jogo !== 'null'){
+      autoSaveDetectedGame(first, rule);
+    }
+
+    hideLoading();
+    applyResult(final);
+
+  }catch(e){
+    hideLoading();
+    applyResult({
+      resultado:'INCERTO',
+      confianca:0,
+      valor_estimado:null,
+      razao:'Erro na leitura',
+      detalhes:'Não foi possível analisar a imagem.\n\nErro: '+e.message
+    });
+  }
+}
+
+/* =========================
+   DECISION ENGINE
+========================= */
+function decideFinal(first, second){
+  first=first||{};
+  second=second||null;
+
+  const fRes = normalizeAI(first.resultado);
+  const sRes = second ? normalizeAI(second.resultado) : null;
+  const fConf = Number(first.confianca || 0);
+  const sConf = second ? Number(second.confianca || 0) : 0;
+  const fVal = safeNum(first.valor_estimado);
+  const sVal = second ? safeNum(second.valor_estimado) : null;
+
+  const matches = Array.isArray(first.correspondencias) ? first.correspondencias : [];
+  const strongMatch = matches.some(m => Number(m.certeza||0) >= 70 || safeNum(m.valor) !== null);
+  const matchValue = matches.map(m=>safeNum(m.valor)).find(v=>v!==null && v>0);
+
+  // Regra principal: se há match/valor, nunca terminar como SEM_PRÉMIO.
+  if(fRes === 'PREMIO' || sRes === 'PREMIO' || fVal>0 || sVal>0 || matchValue>0){
+    const value = sVal || fVal || matchValue || null;
+    const conf = Math.max(fConf, sConf, value ? 88 : 75);
+    return {
+      resultado:'PRÉMIO',
+      confianca:conf,
+      valor_estimado:value,
+      razao: value ? 'Prémio identificado com valor legível.' : 'Prémio identificado, mas valor requer confirmação.',
+      detalhes:composeDetails(first, second, 'Foi detetado prémio. Validar no terminal antes de pagar.')
+    };
+  }
+
+  if(fRes === 'PREMIO_PROVAVEL' || sRes === 'PREMIO_PROVAVEL' || strongMatch){
+    return {
+      resultado:'PRÉMIO_PROVÁVEL',
+      confianca:Math.max(fConf, sConf, 70),
+      valor_estimado:fVal || sVal || matchValue || null,
+      razao:'Há indícios de prémio. Confirmar manualmente/terminal.',
+      detalhes:composeDetails(first, second, 'Existe possível correspondência ou símbolo premiado. Não marcar como sem prémio.')
+    };
+  }
+
+  // Sem prémio apenas com confiança alta e imagem minimamente legível
+  const quality=(first.qualidade_imagem||'').toLowerCase();
+  const highNoPrize = fRes==='SEM_PREMIO' && (!second || sRes==='SEM_PREMIO') && Math.max(fConf,sConf)>=80 && quality !== 'baixa';
+  if(highNoPrize){
+    return {
+      resultado:'SEM_PRÉMIO',
+      confianca:Math.max(fConf,sConf),
+      valor_estimado:null,
+      razao:'Não foram detetadas correspondências premiadas visíveis.',
+      detalhes:composeDetails(first, second, 'Sem prémio detetado com confiança suficiente.')
+    };
+  }
+
+  return {
+    resultado:'INCERTO',
+    confianca:Math.max(fConf,sConf,30),
+    valor_estimado:null,
+    razao:'Leitura insuficiente ou análises pouco conclusivas.',
+    detalhes:composeDetails(first, second, 'Repetir foto com melhor luz ou validar diretamente no terminal.')
+  };
+}
+function normalizeAI(x){
+  x=(x||'').toString().toUpperCase().replace('PRÉMIO','PREMIO');
+  if(x.includes('PROV')) return 'PREMIO_PROVAVEL';
+  if(x.includes('SEM')) return 'SEM_PREMIO';
+  if(x.includes('PREMIO')) return 'PREMIO';
+  return 'INCERTO';
+}
+function composeDetails(first, second, finalMsg){
+  let out='';
+  out += `🎮 Jogo: ${first.nome_jogo || (selectedRule() && selectedRule().name) || 'não identificado'}\n`;
+  out += `Qualidade imagem: ${first.qualidade_imagem || 'n/d'}\n\n`;
+  out += `1.ª análise: ${normalizeResult(first.resultado)} | confiança ${first.confianca||0}% | valor ${first.valor_estimado ?? 'n/d'}€\n`;
+  out += `${first.razao || ''}\n${first.detalhes || ''}\n\n`;
+  if(first.correspondencias && first.correspondencias.length){
+    out += `Correspondências detetadas:\n`;
+    first.correspondencias.forEach((m,i)=>{
+      out += `- ${i+1}. ${m.descricao || m.match || JSON.stringify(m)} | valor: ${m.valor ?? 'n/d'} | certeza: ${m.certeza ?? 'n/d'}%\n`;
+    });
+    out += '\n';
+  }
+  if(second){
+    out += `2.ª análise: ${normalizeResult(second.resultado)} | confiança ${second.confianca||0}% | valor ${second.valor_estimado ?? 'n/d'}€\n`;
+    out += `${second.razao || ''}\n${second.detalhes || ''}\n\n`;
+  }
+  out += `Decisão final: ${finalMsg}`;
+  return out;
+}
+
+/* =========================
+   RESULT MODAL / SAVE
+========================= */
+function openResultModal(imgData){
+  $('result-img').src=imgData;
+  $('result-badge').className='rbadge unc';
+  $('result-ico').textContent='🔍';
+  $('result-title').textContent='A analisar...';
+  $('result-val').textContent='';
+  $('result-conf').textContent='';
+  $('result-text').textContent='A processar imagem...';
+  $('manual-value').value='';
+  $('manual-lot').value='';
+  $('manual-notes').value='';
+  $('modal-result').classList.add('open');
+}
+function closeResultModal(){
+  $('modal-result').classList.remove('open');
+}
+function applyResult(result){
+  state.currentResult=result;
+  const b=$('result-badge'), ico=$('result-ico'), title=$('result-title'), val=$('result-val'), conf=$('result-conf');
+  const r=normalizeResult(result.resultado);
+
+  val.style.fontSize='';
+  val.style.color='';
+
+  if(r==='PRÉMIO'){
+    b.className='rbadge prize'; ico.textContent='🎉'; title.textContent='Prémio detetado';
+    if(result.valor_estimado){ val.textContent=result.valor_estimado+'€'; $('manual-value').value=result.valor_estimado; }
+    else { val.textContent='Valor por confirmar'; val.style.fontSize='17px'; val.style.color='var(--yellow)'; }
+  }else if(r==='PRÉMIO_PROVÁVEL'){
+    b.className='rbadge prob'; ico.textContent='⚠️'; title.textContent='Prémio provável';
+    val.textContent=result.valor_estimado ? result.valor_estimado+'€' : 'Confirmar valor';
+    val.style.fontSize='18px'; val.style.color='var(--yellow)';
+    if(result.valor_estimado) $('manual-value').value=result.valor_estimado;
+  }else if(r==='SEM_PRÉMIO'){
+    b.className='rbadge nop'; ico.textContent='❌'; title.textContent='Sem prémio';
+    val.textContent='';
+  }else{
+    b.className='rbadge unc'; ico.textContent='🔍'; title.textContent='Resultado incerto';
+    val.textContent='';
+  }
+  conf.textContent=`Confiança: ${Math.round(result.confianca||0)}% — ${result.razao||''}`;
+  $('result-text').textContent=result.detalhes||'';
+}
+function saveResult(){
+  if(!state.currentCapture || !state.currentResult){ toast('⚠️ Sem resultado para guardar'); return; }
+  const manualVal=safeNum($('manual-value').value);
+  const finalResult={
+    id:String(Date.now()),
+    ts:state.currentCapture.ts,
+    operator:state.user?.name||'',
+    site:state.user?.site||'',
+    game:(state.currentResult.raw1 && state.currentResult.raw1.nome_jogo) || (selectedRule() && selectedRule().name) || 'Raspadinha',
+    result:normalizeResult(state.currentResult.resultado),
+    confidence:Math.round(state.currentResult.confianca||0),
+    value:manualVal!==null ? manualVal : safeNum(state.currentResult.valor_estimado),
+    lot:$('manual-lot').value.trim(),
+    notes:$('manual-notes').value.trim(),
+    details:state.currentResult.detalhes||'',
+    img:state.currentCapture.original
+  };
+  state.tickets.unshift(finalResult);
+  saveAll();
+  closeResultModal();
+  updateDash();
+  toast('✅ Leitura guardada');
+  navTo('dash');
+}
+
+/* =========================
+   RULES / GAMES
+========================= */
+function renderGameSelect(){
+  const sel=$('game-select');
+  sel.innerHTML='<option value="">Detetar automaticamente</option>' + state.rules.map(r=>`<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)}${r.price?' · '+r.price+'€':''}</option>`).join('');
+}
+function openRuleModal(prefill){
+  $('rule-name').value=prefill?.name||'';
+  $('rule-price').value=prefill?.price||'';
+  $('rule-type').value=prefill?.type||'NUMEROS';
+  $('rule-text').value=prefill?.text||'';
+  $('rule-symbols').value=prefill?.symbols||'';
+  $('modal-rule').dataset.editId=prefill?.id||'';
+  $('modal-rule').classList.add('open');
+}
+function closeRuleModal(){ $('modal-rule').classList.remove('open'); }
+function saveRule(){
+  const name=$('rule-name').value.trim();
+  if(!name){ toast('⚠️ Indica o nome do jogo'); return; }
+  const id=$('modal-rule').dataset.editId || ('rule-'+Date.now());
+  const rule={
+    id,
+    name,
+    price:safeNum($('rule-price').value),
+    type:$('rule-type').value,
+    text:$('rule-text').value.trim(),
+    symbols:$('rule-symbols').value.trim()
+  };
+  const idx=state.rules.findIndex(r=>r.id===id);
+  if(idx>=0) state.rules[idx]=rule; else state.rules.unshift(rule);
+  saveAll();
+  renderGameSelect();
+  renderRules();
+  closeRuleModal();
+  $('game-select').value=id;
+  toast('✅ Jogo guardado');
+}
+function renderRules(){
+  const el=$('rules-list');
+  if(!state.rules.length){ el.innerHTML='<div class="empty">Sem jogos guardados.</div>'; return; }
+  el.innerHTML=state.rules.map(r=>`
+    <div class="rule-card">
+      <div class="rule-title">${escapeHtml(r.name)}</div>
+      <div class="rule-meta">${r.price?r.price+'€ · ':''}${escapeHtml(r.type||'OUTRO')}</div>
+      <div class="rule-meta" style="white-space:normal;margin-top:7px">${escapeHtml((r.text||'Sem regras').slice(0,180))}</div>
+      <div class="rule-actions">
+        <button class="btn small secondary" data-edit-rule="${escapeHtml(r.id)}">Editar</button>
+        <button class="btn small red" data-del-rule="${escapeHtml(r.id)}">Apagar</button>
+      </div>
+    </div>
+  `).join('');
+}
+function autoSaveDetectedGame(first, existingRule){
+  const name=(first.nome_jogo||'').trim();
+  if(!name || name.toLowerCase()==='null') return;
+  const exists=state.rules.some(r=>r.name.toLowerCase()===name.toLowerCase());
+  if(exists || existingRule) return;
+  const rule={
+    id:'auto-'+Date.now(),
+    name,
+    price:null,
+    type:'OUTRO',
+    text:'Jogo detetado automaticamente. Completar regras para acelerar leituras futuras.',
+    symbols:(first.simbolos_vistos||[]).join(', ')
+  };
+  state.rules.unshift(rule);
+  saveAll();
+  renderGameSelect();
+}
+function deleteRule(id){
+  if(!confirm('Apagar este jogo guardado?')) return;
+  state.rules=state.rules.filter(r=>r.id!==id);
+  saveAll();
+  renderGameSelect();
+  renderRules();
+}
+
+/* =========================
+   RENDER HISTORY / REPORTS
+========================= */
+function updateDash(){
+  const td=todayList();
+  const p=td.filter(t=>t.result==='PRÉMIO').length;
+  const pp=td.filter(t=>t.result==='PRÉMIO_PROVÁVEL').length;
+  const n=td.filter(t=>t.result==='SEM_PRÉMIO').length;
+  const u=td.filter(t=>t.result==='INCERTO').length;
+  $('k-total').textContent=td.length;
+  $('k-prize').textContent=p;
+  $('k-no').textContent=n;
+  $('k-unc').textContent=pp+u;
+  $('k-pct').textContent=td.length ? Math.round((p+pp)/td.length*100)+'%' : '0%';
+  renderDashboardList();
+}
+function renderDashboardList(){
+  const el=$('d-list');
+  const td=todayList();
+  if(!td.length){el.innerHTML='<div class="empty">Sem leituras hoje.</div>';return;}
+  el.innerHTML=td.slice(0,8).map(ticketCard).join('');
+}
+function ticketCard(t){
+  const cls=t.result==='PRÉMIO'?'bp':t.result==='SEM_PRÉMIO'?'bn':t.result==='PRÉMIO_PROVÁVEL'?'bq':'bu';
+  const label=t.result==='PRÉMIO'?'🎉 '+(t.value?t.value+'€':'Prémio'):
+              t.result==='SEM_PRÉMIO'?'❌ Sem prémio':
+              t.result==='PRÉMIO_PROVÁVEL'?'⚠️ Provável':'🔍 Incerto';
+  return `
+    <div class="tc">
+      <div class="tt">${t.img?`<img src="${t.img}" alt="">`:'🎰'}</div>
+      <div class="ti">
+        <div class="tn">${escapeHtml(t.game||'Raspadinha')}</div>
+        <div class="tm">${fmtTime(t.ts)} · ${t.confidence||0}%${t.lot?' · '+escapeHtml(t.lot):''}</div>
+      </div>
+      <div class="bdg ${cls}">${label}</div>
+    </div>
+  `;
+}
+function renderHistory(filter){
+  state.currentFilter=filter||'all';
+  document.querySelectorAll('.fc').forEach(fc=>fc.classList.toggle('active',fc.dataset.filter===state.currentFilter));
+  const list=state.currentFilter==='all'?state.tickets:state.tickets.filter(t=>t.result===state.currentFilter);
+  const el=$('h-list');
+  if(!list.length){el.innerHTML='<div class="empty">Sem registos.</div>';return;}
+  el.innerHTML=list.map(ticketCard).join('');
+}
+function updateReports(){
+  const td=todayList();
+  $('r-total').textContent=td.length;
+  $('r-prize').textContent=td.filter(t=>t.result==='PRÉMIO').length;
+  $('r-no').textContent=td.filter(t=>t.result==='SEM_PRÉMIO').length;
+  $('r-unc').textContent=td.filter(t=>t.result==='INCERTO'||t.result==='PRÉMIO_PROVÁVEL').length;
+}
+function exportCSV(){
+  const rows=[['ID','Data','Operador','Posto','Jogo','Resultado','Confiança','Valor','Lote','Notas','Detalhes']];
+  state.tickets.forEach(t=>rows.push([t.id,fmtDate(t.ts),t.operator,t.site,t.game,t.result,t.confidence,t.value??'',t.lot,t.notes,t.details]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  downloadBlob('\uFEFF'+csv,'scratchscan_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
+}
+function exportHTML(){
+  const rows=state.tickets.map(t=>`
+    <tr><td>${fmtDate(t.ts)}</td><td>${escapeHtml(t.site)}</td><td>${escapeHtml(t.game)}</td><td>${escapeHtml(t.result)}</td><td>${t.confidence}%</td><td>${t.value??''}</td><td>${escapeHtml(t.lot||'')}</td><td>${escapeHtml(t.notes||'')}</td></tr>
+  `).join('');
+  const doc=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatório ScratchScan</title>
+  <style>body{font-family:Arial;margin:30px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px;font-size:12px}th{background:#f3f3f3}h1{margin-bottom:0}.muted{color:#666}</style></head><body>
+  <h1>Relatório ScratchScan</h1><p class="muted">Exportado em ${fmtDate(new Date().toISOString())}</p>
+  <table><thead><tr><th>Data</th><th>Posto</th><th>Jogo</th><th>Resultado</th><th>Conf.</th><th>Valor</th><th>Lote</th><th>Notas</th></tr></thead><tbody>${rows}</tbody></table>
+  <p><b>Nota:</b> validação oficial obrigatória no terminal/sistema autorizado.</p></body></html>`;
+  downloadBlob(doc,'relatorio_scratchscan_'+new Date().toISOString().slice(0,10)+'.html','text/html;charset=utf-8');
+}
+function downloadBlob(content,name,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+}
+
+/* =========================
+   UTILS / EVENTS
+========================= */
+function escapeHtml(s){
+  return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadAll();
+
+  $('btn-enter').addEventListener('click', enterApp);
+  $('upload-btn').addEventListener('click', triggerUpload);
+  $('file-input').addEventListener('change', handleFile);
+  $('capture-btn').addEventListener('click', capturePhoto);
+  $('discard-result').addEventListener('click', closeResultModal);
+  $('save-result').addEventListener('click', saveResult);
+  $('new-rule-btn').addEventListener('click', ()=>openRuleModal());
+  $('add-game-top').addEventListener('click', ()=>openRuleModal());
+  $('close-rule').addEventListener('click', closeRuleModal);
+  $('save-rule').addEventListener('click', saveRule);
+  $('save-profile').addEventListener('click', saveProfile);
+  $('export-csv').addEventListener('click', exportCSV);
+  $('export-html').addEventListener('click', exportHTML);
+  $('logout').addEventListener('click', ()=>{stopCamera();showAuth();});
+  $('clear-data').addEventListener('click', ()=>{
+    if(confirm('Apagar todo o histórico deste dispositivo?')){
+      state.tickets=[]; saveAll(); updateDash(); renderHistory('all'); toast('Histórico apagado');
+    }
+  });
+
+  document.addEventListener('click', e=>{
+    const nav=e.target.closest('[data-nav]');
+    if(nav){ navTo(nav.dataset.nav); return; }
+
+    const filter=e.target.closest('[data-filter]');
+    if(filter){ renderHistory(filter.dataset.filter); return; }
+
+    const edit=e.target.closest('[data-edit-rule]');
+    if(edit){ const r=state.rules.find(x=>x.id===edit.dataset.editRule); if(r) openRuleModal(r); return; }
+
+    const del=e.target.closest('[data-del-rule]');
+    if(del){ deleteRule(del.dataset.delRule); return; }
+
+    if(e.target===$('modal-result')) closeResultModal();
+    if(e.target===$('modal-rule')) closeRuleModal();
+  });
+
+  renderGameSelect();
+  if(state.user){
+    $('login-name').value=state.user.name||'';
+    $('login-site').value=state.user.site||'';
+    $('login-key').value=state.user.key||'';
+    showApp();
+  }
+});
 </script>
 </body>
 </html>
