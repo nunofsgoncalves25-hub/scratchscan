@@ -345,27 +345,25 @@ function analyzeTicket(imgData){
   var headers = {'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
 
   var prompt = 'Es um especialista forense em raspadinhas da SCML Portugal com 20 anos de experiencia.\n'
-    + 'A tua funcao e analisar raspadinhas mesmo em condicoes dificeis - reflexos, peliculas, desgaste.\n'
     + 'NUNCA digas que nao consegues ler se houver qualquer numero visivel. Faz o teu melhor esforco sempre.\n\n'
-    + 'REGRA IMPORTANTE: Se a raspadinha tem numeros visiveis (mesmo parcialmente), esta raspada.\n'
-    + 'A pelicula semi-transparente das raspadinhas nao raspadas deixa ver os numeros por baixo - isso NAO significa dano.\n\n'
-    + 'JOGO 50X (raspadinha rosa com estrelas azuis):\n'
-    + '- NUMEROS DA SORTE: linha de 5 numeros no TOPO da area de jogo (ex: 35, 40, 11, 33, 39)\n'
-    + '- SEUS NUMEROS: 15 numeros revelados nas estrelas (3 linhas de 5 estrelas)\n'
-    + '- Cada estrela tem um numero EM CIMA e um valor em euros POR BAIXO\n'
-    + '- Se qualquer numero de cima de estrela = numero da sorte -> PREMIO do valor em baixo\n'
-    + '- Multiplicador (2X/5X/10X/20X/50X) se aparecer multiplica o premio\n'
-    + '- Le TODOS os 15 numeros das estrelas e compara com os 5 numeros da sorte\n\n'
-    + 'JOGO ARANHA DA SORTE (verde com aranha):\n'
-    + '- 9 jogos, cada um com 2 simbolos\n'
-    + '- 2 simbolos iguais = PREMIO do valor indicado\n'
-    + '- Simbolo aranha especial = premio do valor abaixo\n\n'
-    + 'PARA QUALQUER JOGO:\n'
-    + '- Le TODOS os numeros/simbolos visiveis mesmo que parcialmente\n'
-    + '- Nao uses INCERTO por dificuldade de leitura - usa o que consegues ver\n'
-    + '- So usa INCERTO se for completamente impossivel determinar\n\n'
+    + 'LAYOUT DO JOGO 50X (raspadinha rosa com estrelas azuis):\n'
+    + '- NUMEROS DA SORTE: 5 numeros fixos na linha do TOPO (ex: 35, 40, 11, 33, 39)\n'
+    + '- SEUS NUMEROS: 15 estrelas em 3 linhas de 5\n'
+    + '- Cada estrela tem EXATAMENTE: numero GRANDE em cima + valor em euros PEQUENO em baixo (ex: €5, €10)\n'
+    + '- COINCIDENCIA: Se numero da estrela = numero da sorte -> ganha o valor em euros dessa estrela\n'
+    + '- Le o valor em euros que esta DENTRO ou ABAIXO de cada estrela que coincide\n'
+    + '- Soma todos os valores das estrelas que coincidiram\n'
+    + '- Se houver multiplicador (2X/5X/10X/20X/50X) multiplica o total\n\n'
+    + 'EXEMPLO: estrela com "39" em cima e "€5" em baixo + numero da sorte 39 = PREMIO €5\n\n'
+    + 'LAYOUT DA ARANHA DA SORTE (raspadinha verde):\n'
+    + '- 9 jogos com 2 simbolos cada\n'
+    + '- 2 simbolos iguais = PREMIO do valor indicado no jogo\n'
+    + '- Simbolo aranha especial = valor impresso abaixo\n\n'
+    + 'REGRA CRITICA: So reportas coincidencia se o numero da estrela for EXATAMENTE igual a um numero da sorte.\n'
+    + 'Nao inventes coincidencias. Se nao tens a certeza, nao incluis na lista.\n'
+    + 'Le os 15 numeros das estrelas um a um e compara com CADA numero da sorte antes de decidir.\n\n'
     + 'Responde APENAS com JSON:\n'
-    + '{"raspada":true/false,"nome_jogo":"nome","numeros_sorte":[lista],"seus_numeros":[lista],"coincidencias":[numeros que coincidem],"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":euros ou null,"razao":"1 frase","detalhes":"lista todos os numeros lidos e comparacao"}';
+    + '{"raspada":true/false,"nome_jogo":"nome","numeros_sorte":[lista],"coincidencias":[{"numero":X,"valor":Y}],"multiplicador":null ou numero,"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":total euros,"razao":"1 frase com valores exatos","detalhes":"lista todos numeros lidos e valores das coincidencias"}';
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST', headers:headers,
@@ -384,6 +382,12 @@ function analyzeTicket(imgData){
         result.resultado='INCERTO';result.confianca=99;
         result.razao='Raspadinha por raspar — cliente deve raspar primeiro';
         result.detalhes='A area de jogo ainda tem cobertura prateada intacta. O cliente deve raspar completamente e apresentar novamente.';
+      }
+      // Calcula total das coincidencias se disponiveis
+      if(result.coincidencias && Array.isArray(result.coincidencias) && result.coincidencias.length>0){
+        var total=result.coincidencias.reduce(function(s,c){return s+(parseFloat(c.valor)||0);},0);
+        if(result.multiplicador&&result.multiplicador>1) total=total*result.multiplicador;
+        if(total>0){result.valor_estimado=total; result.resultado='PRÉMIO';}
       }
       if(result.resultado==='PREMIO')result.resultado='PRÉMIO';
       if(result.resultado==='SEM_PREMIO')result.resultado='SEM_PRÉMIO';
