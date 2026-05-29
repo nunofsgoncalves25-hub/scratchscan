@@ -269,19 +269,22 @@ function onGallery(e){
   var f=e.target.files[0]; if(!f) return;
   var r=new FileReader();
   r.onload=function(ev){
-    // Resize image to max 1600px for better API reading
+    // Resize to max 2048px (Claude vision optimal) keeping high detail
     var img=new Image();
     img.onload=function(){
-      var maxW=1600, maxH=1600;
+      var maxDim=2048;
       var w=img.width, h=img.height;
-      if(w>maxW||h>maxH){
-        var ratio=Math.min(maxW/w,maxH/h);
+      if(w>maxDim||h>maxDim){
+        var ratio=Math.min(maxDim/w,maxDim/h);
         w=Math.round(w*ratio); h=Math.round(h*ratio);
       }
       var canvas=document.createElement('canvas');
       canvas.width=w; canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      openResult(canvas.toDataURL('image/jpeg',0.95));
+      var ctx=canvas.getContext('2d');
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,0,0,w,h);
+      openResult(canvas.toDataURL('image/jpeg',0.98));
     };
     img.src=ev.target.result;
   };
@@ -336,100 +339,109 @@ function analyzeTicket(imgData){
   var key = getKey();
   var base64 = imgData.split(',')[1];
   var mime = imgData.split(';')[0].split(':')[1]||'image/jpeg';
-  var type = $('type-sel').value;
 
   if(!key){ showDemoResult(); return; }
 
-  showLoading('A analisar raspadinha...');
-
   var headers = {'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
 
-  var prompt = 'Es um especialista forense em raspadinhas portuguesas (SCML / Jogos Santa Casa) com 20 anos de experiencia. Analisas raspadinhas raspadas pelos clientes, mesmo com reflexos, residuos de tinta prateada, dobras ou desgaste. O teu objetivo e ajudar o operador a validar rapidamente.\n\n'
-    + 'IMPORTANTE SOBRE O ESTADO:\n'
-    + '- A area de JOGO esta raspada se vires simbolos/numeros revelados (superficie irregular, restos de prateado nas bordas).\n'
-    + '- O texto "nao raspar" no canto e apenas um aviso impresso sobre a zona do codigo/talao - NAO significa que o jogo nao foi raspado.\n'
-    + '- So consideras raspada=false se a area de jogo estiver TOTALMENTE coberta por pelicula prateada opaca uniforme.\n'
-    + '- Na duvida, assume raspada=true e analisa.\n\n'
-    + 'PASSO 1 - IDENTIFICA O JOGO pelo nome e regras impressas.\n\n'
-    + 'PASSO 2 - DETERMINA O TIPO E APLICA AS REGRAS:\n\n'
-    + 'TIPO A - COMPARACAO DE NUMEROS (ex: 50X, Mega, Fortuna):\n'
-    + '  - NUMEROS DA SORTE: linha de numeros no topo da area de jogo.\n'
-    + '  - SEUS NUMEROS: numeros revelados (em estrelas ou celulas), cada um com um VALOR em euros por baixo.\n'
-    + '  - Para cada um dos SEUS NUMEROS que seja EXATAMENTE igual a um NUMERO DA SORTE: ganha o valor por baixo desse numero.\n'
-    + '  - Soma todos os valores ganhos.\n'
-    + '  - Se existir SIMBOLO MULTIPLICADOR (2X,5X,10X,20X,50X) revelado, multiplica o premio correspondente.\n'
-    + '  - NUNCA inventes coincidencias - compara numero a numero com rigor.\n\n'
-    + 'TIPO B - SIMBOLOS IGUAIS (ex: Aranha da Sorte):\n'
-    + '  - Varios jogos, cada um com 2 ou 3 simbolos.\n'
-    + '  - 2 (ou 3) simbolos IGUAIS no mesmo jogo = ganha o premio indicado nesse jogo.\n'
-    + '  - SIMBOLO ESPECIAL (ex: aranha) = ganha a quantia indicada nesse jogo.\n'
-    + '  - SIMBOLO BONUS (ex: teia) = premio fixo imediato (le o valor nas regras).\n'
-    + '  - Le o valor EXATO impresso em cada jogo vencedor (ex: VINTE=20, DOIS=2, CINCO=5).\n\n'
-    + 'TIPO C - OUTRO: aplica as regras impressas na raspadinha.\n\n'
-    + 'PASSO 3 - LEITURA DE VALORES:\n'
-    + '  - Le sempre o valor numerico ou por extenso impresso (DOIS=2, CINCO=5, DEZ=10, VINTE=20, CINQUENTA=50, CEM=100, MIL=1000).\n'
-    + '  - Se detetas premio mas NAO consegues ler o valor com certeza, poe valor_estimado=null e resultado=PREMIO (o operador confirma).\n'
-    + '  - NUNCA uses INCERTO so por dificuldade de leitura parcial - usa PREMIO ou SEM_PREMIO com a tua melhor avaliacao.\n'
-    + '  - So usa INCERTO se for impossivel ver os simbolos/numeros.\n\n'
-    + 'Responde APENAS com JSON valido (sem texto antes ou depois):\n'
-    + '{"raspada":true ou false,"nome_jogo":"nome","tipo":"A ou B ou C","numeros_sorte":[lista ou null],"coincidencias":[{"numero_ou_jogo":X,"valor":Y}],"multiplicador":null ou numero,"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":total em euros ou null,"razao":"1 frase clara","detalhes":"analise jogo a jogo: o que viste e a conclusao"}';
+  // ── FASE 1: Ler e compreender as regras do jogo ──
+  showLoading('Fase 1/2 — A ler as regras do jogo...');
+
+  var promptRegras = 'Es um especialista em raspadinhas portuguesas (Jogos Santa Casa). '
+    + 'Observa esta raspadinha e le com atencao TODO o texto de regras/instrucoes impresso (normalmente no fundo ou laterais). '
+    + 'Explica de forma clara e operacional COMO se ganha neste jogo especifico.\n\n'
+    + 'Responde APENAS com JSON:\n'
+    + '{"nome_jogo":"nome exato","preco":numero,"tipo":"NUMEROS (comparar numeros da sorte com os seus numeros) ou SIMBOLOS (encontrar simbolos iguais ou especiais) ou OUTRO",'
+    + '"regras_texto":"transcricao do texto de regras impresso","como_ganhar":"explicacao passo a passo de como determinar se ha premio e quanto",'
+    + '"simbolos_especiais":"descreve cada simbolo especial e o que faz (ex: aranha = ganha valor indicado; teia = 20 euros)",'
+    + '"raspada":true se a area de jogo foi raspada/revelada, false se totalmente coberta por pelicula prateada opaca}';
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST', headers:headers,
-    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:2000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:prompt}]}]})
+    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:1500,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:promptRegras}]}]})
   })
   .then(function(r){return r.json();})
-  .then(function(d){
-    hideLoading();
-    if(d.error){
-      // Se opus falhar, tenta sonnet
-      if(d.error.message && d.error.message.indexOf('model')>=0){
-        retryWithSonnet(base64,mime,prompt,headers);
-        return;
-      }
-      applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API: '+d.error.message,detalhes:d.error.message});
+  .then(function(d1){
+    if(d1.error){
+      if(d1.error.message && d1.error.message.indexOf('model')>=0){ analyzeFase1Sonnet(base64,mime,headers,promptRegras); return; }
+      hideLoading(); applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API',detalhes:d1.error.message}); return;
+    }
+    var rules={};
+    try{ var raw=d1.content[0].text; var m=raw.match(/\{[\s\S]*\}/); rules=JSON.parse(m?m[0]:raw); }catch(e){ rules={como_ganhar:'',raspada:true}; }
+
+    if(rules.raspada===false){
+      hideLoading();
+      applyResult({resultado:'INCERTO',confianca:99,valor_estimado:null,razao:'Raspadinha por raspar',detalhes:'A area de jogo ainda esta coberta pela pelicula prateada. O cliente deve raspar primeiro.'});
       return;
     }
-    processResult(d);
+    analyzeFase2(base64,mime,headers,rules);
   })
-  .catch(function(err){
-    hideLoading();
-    applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro de ligacao',detalhes:err.message+' — Verifica a API Key em Perfil.'});
-  });
-}
-
-function retryWithSonnet(base64,mime,prompt,headers){
-  showLoading('A analisar (modelo alternativo)...');
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST', headers:headers,
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:prompt}]}]})
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){ hideLoading(); if(d.error){applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API',detalhes:d.error.message});return;} processResult(d); })
   .catch(function(err){ hideLoading(); applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro de ligacao',detalhes:err.message}); });
 }
 
-function processResult(d){
+function analyzeFase1Sonnet(base64,mime,headers,promptRegras){
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST', headers:headers,
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1500,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:promptRegras}]}]})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d1){
+    if(d1.error){ hideLoading(); applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API',detalhes:d1.error.message}); return; }
+    var rules={};
+    try{ var raw=d1.content[0].text; var m=raw.match(/\{[\s\S]*\}/); rules=JSON.parse(m?m[0]:raw); }catch(e){ rules={como_ganhar:'',raspada:true}; }
+    if(rules.raspada===false){ hideLoading(); applyResult({resultado:'INCERTO',confianca:99,valor_estimado:null,razao:'Raspadinha por raspar',detalhes:'A area de jogo ainda esta coberta. Cliente deve raspar primeiro.'}); return; }
+    analyzeFase2(base64,mime,headers,rules,'claude-sonnet-4-5');
+  })
+  .catch(function(err){ hideLoading(); applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro de ligacao',detalhes:err.message}); });
+}
+
+function analyzeFase2(base64,mime,headers,rules,forceModel){
+  showLoading('Fase 2/2 — A analisar a área de jogo...');
+
+  var promptAnalise = 'Es um especialista forense em raspadinhas portuguesas. Vais analisar a area de jogo desta raspadinha JA RASPADA.\n\n'
+    + 'JOGO IDENTIFICADO: ' + (rules.nome_jogo||'?') + ' (€' + (rules.preco||'?') + ')\n\n'
+    + 'REGRAS DESTE JOGO (lidas da raspadinha):\n' + (rules.regras_texto||'') + '\n\n'
+    + 'COMO SE GANHA:\n' + (rules.como_ganhar||'') + '\n\n'
+    + 'SIMBOLOS ESPECIAIS:\n' + (rules.simbolos_especiais||'nenhum') + '\n\n'
+    + 'INSTRUCOES DE ANALISE:\n'
+    + '1. Observa cada celula/jogo individual da area de jogo (ignora desenhos decorativos grandes do topo).\n'
+    + '2. Aplica EXATAMENTE as regras acima a cada jogo.\n'
+    + '3. Para cada jogo, identifica os simbolos/numeros revelados e verifica se cumprem a condicao de premio.\n'
+    + '4. Quando um jogo ganha, le o VALOR exato impresso nesse jogo (numeros ou por extenso: DOIS=2, CINCO=5, DEZ=10, VINTE=20, CINQUENTA=50, CEM=100, MIL=1000).\n'
+    + '5. Soma todos os premios. Aplica multiplicadores se existirem e forem revelados.\n'
+    + '6. Se ves um simbolo especial (aranha, etc) numa celula de jogo, aplica a regra correspondente.\n'
+    + '7. Se detetas premio mas nao consegues ler o valor com certeza, poe valor_estimado=null (o operador confirma).\n'
+    + '8. So usa INCERTO se for impossivel ver os simbolos. Caso contrario decide PREMIO ou SEM_PREMIO.\n\n'
+    + 'Responde APENAS com JSON:\n'
+    + '{"resultado":"PREMIO ou SEM_PREMIO ou INCERTO","confianca":0-100,"valor_estimado":total euros ou null,'
+    + '"jogos_vencedores":[{"jogo":"identificacao","simbolos":"o que viste","valor":numero ou null}],'
+    + '"razao":"1 frase clara","detalhes":"analise jogo a jogo detalhada"}';
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST', headers:headers,
+    body:JSON.stringify({model:forceModel||'claude-opus-4-5',max_tokens:2000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:base64}},{type:'text',text:promptAnalise}]}]})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){ hideLoading(); if(d.error){applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro API',detalhes:d.error.message});return;} processResult(d,rules); })
+  .catch(function(err){ hideLoading(); applyResult({resultado:'INCERTO',confianca:0,valor_estimado:null,razao:'Erro de ligacao',detalhes:err.message}); });
+}
+
+function processResult(d,rules){
   var result={};
   try{
     var raw=(d.content&&d.content[0])?d.content[0].text:'{}';
     var m=raw.match(/\{[\s\S]*\}/);
     result=JSON.parse(m?m[0]:raw);
-    if(result.raspada===false){
-      result.resultado='INCERTO';result.confianca=99;
-      result.razao='Raspadinha por raspar — cliente deve raspar a area de jogo primeiro';
-      result.detalhes='A area de jogo ainda esta totalmente coberta pela pelicula prateada. O cliente deve raspar e apresentar novamente.';
-      applyResult(result); return;
-    }
-    // Calcula total das coincidencias
-    if(result.coincidencias && Array.isArray(result.coincidencias) && result.coincidencias.length>0){
-      var total=result.coincidencias.reduce(function(s,c){return s+(parseFloat(c.valor)||0);},0);
-      if(result.multiplicador&&result.multiplicador>1) total=total*result.multiplicador;
-      if(total>0){ result.valor_estimado=total; }
+    // Soma dos jogos vencedores
+    if(result.jogos_vencedores && Array.isArray(result.jogos_vencedores) && result.jogos_vencedores.length>0){
+      var total=result.jogos_vencedores.reduce(function(s,j){return s+(parseFloat(j.valor)||0);},0);
+      if(total>0 && !result.valor_estimado) result.valor_estimado=total;
       result.resultado='PRÉMIO';
     }
     if(result.resultado==='PREMIO')result.resultado='PRÉMIO';
     if(result.resultado==='SEM_PREMIO')result.resultado='SEM_PRÉMIO';
+    // Prefixar nome do jogo nos detalhes
+    if(rules && rules.nome_jogo) result.detalhes='🎮 '+rules.nome_jogo+'\n\n'+(result.detalhes||'');
   }catch(e){
     result={resultado:'INCERTO',confianca:30,valor_estimado:null,razao:'Erro ao processar resposta',detalhes:(d.content&&d.content[0])?d.content[0].text:e.message};
   }
